@@ -1,0 +1,73 @@
+﻿@model MaSV_MyStore.Models.ViewModel.ProductSearchVM
+
+@{
+    ViewBag.Title = "Danh sách sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 class="bg-success text-white p-2">DANH SÁCH SẢN PHẨM</h2>
+
+@using (Html.BeginForm("Index", "Products", FormMethod.Get, new { @class = "form-inline mb-3" }))
+{
+    <div class="form-group mr-2">
+        @Html.TextBoxFor(m => m.SearchTerm, new { @class = "form-control", placeholder = "Tìm kiếm sản phẩm..." })
+    </div>
+    <div class="form-group mr-2">
+        @Html.TextBoxFor(m => m.MinPrice, new { @class = "form-control", type = "number", placeholder = "Giá từ" })
+    </div>
+    <div class="form-group mr-2">
+        @Html.TextBoxFor(m => m.MaxPrice, new { @class = "form-control", type = "number", placeholder = "Đến giá" })
+    </div>
+    <button type="submit" class="btn btn-primary">Lọc dữ liệu</button>
+}
+
+<div class="mb-3">
+    <span>Sắp xếp: </span>
+    @Html.ActionLink("Tên (A-Z)", "Index", new { sortOrder = "name_asc", searchTerm = Model.SearchTerm, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice }) |
+    @Html.ActionLink("Tên (Z-A)", "Index", new { sortOrder = "name_desc", searchTerm = Model.SearchTerm, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice }) |
+    @Html.ActionLink("Giá tăng dần", "Index", new { sortOrder = "price_asc", searchTerm = Model.SearchTerm, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice }) |
+    @Html.ActionLink("Giá giảm dần", "Index", new { sortOrder = "price_desc", searchTerm = Model.SearchTerm, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice })
+</div>
+
+<p>
+    @Html.ActionLink("Thêm mới sản phẩm", "Create", null, new { @class = "btn btn-success" })
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr class="bg-info text-white">
+            <th>Ảnh</th>
+            <th>Tên sản phẩm</th>
+            <th>Đơn giá</th>
+            <th>Danh mục</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Products != null && Model.Products.Any())
+        {
+            foreach (var item in Model.Products)
+            {
+                <tr>
+                    <td>
+                        <img src="@Url.Content(item.ProductImage ?? "~/Content/images/default_img.png")" style="width:70px; height:70px; object-fit:cover;" />
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
+                    <td>@string.Format("{0:N0} đ", item.ProductPrice)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
+                    <td>
+                        @Html.ActionLink("Sửa", "Edit", new { id = item.ProductID }, new { @class = "btn btn-primary btn-sm" })
+                        @Html.ActionLink("Chi tiết", "Details", new { id = item.ProductID }, new { @class = "btn btn-info btn-sm" })
+                        @Html.ActionLink("Xóa", "Delete", new { id = item.ProductID }, new { @class = "btn btn-danger btn-sm" })
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center">Không tìm thấy sản phẩm nào.</td>
+            </tr>
+        }
+    </tbody>
+</table>
