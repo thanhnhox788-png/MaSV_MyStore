@@ -1,0 +1,68 @@
+﻿@model MaSV_MyStore.Models.ViewModels.ProductDetailVM
+
+@{
+    ViewBag.Title = "Chi tiết sản phẩm - " + Model.Product.ProductName;
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";   // dùng Customer Layout
+}
+
+<div class="container mt-4">
+    <!-- Thông tin sản phẩm -->
+    <div class="row">
+        <div class="col-md-5">
+            <img src="~/Images/@Model.Product.ProductImage"
+                 class="img-fluid rounded shadow"
+                 alt="@Model.Product.ProductName"
+                 style="max-height: 450px; object-fit: cover; width: 100%;" />
+        </div>
+
+        <div class="col-md-7">
+            <h2>@Model.Product.ProductName</h2>
+            <p>
+                <span class="badge bg-secondary">@Model.Product.Category.CategoryName</span>
+            </p>
+
+            <h3 class="text-danger my-3">
+                @string.Format("{0:N0}", Model.Product.ProductPrice) VNĐ
+            </h3>
+
+            <p><strong>Mô tả sản phẩm:</strong></p>
+            <p>@Model.Product.ProductDescription</p>
+            <p class="text-muted">
+                Đã bán: <strong>0</strong> sản phẩm
+            </p>    
+
+            <!-- Form thêm vào giỏ hàng -->
+            <div class="mt-4">
+                @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+                {
+                    @Html.Hidden("productId", Model.Product.ProductID)
+
+                    <div class="input-group mb-3" style="max-width: 200px;">
+                        <span class="input-group-text">Số lượng</span>
+                        <input type="number" name="quantity" value="@Model.Quantity"
+                               min="1" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg me-2">
+                        <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+                    </button>
+
+                    @Html.ActionLink("Quay lại trang chủ", "Index", "Home", null,
+                        new { @class = "btn btn-outline-secondary btn-lg" })
+                }
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-5" />
+
+    <!-- Sản phẩm tương tự -->
+    <h4 class="mb-3">Sản phẩm tương tự</h4>
+    @Html.Partial("_PVRelatedProduct", Model)
+
+    <hr class="my-5" />
+
+    <!-- Top Deals / Sản phẩm bán chạy -->
+    <h4 class="mb-3">Sản phẩm bán chạy cùng danh mục</h4>
+    @Html.Partial("_PVTopProduct", Model)
+</div>

@@ -15,6 +15,17 @@
         <AssociationConnector Association="MyStoreModel.FK_Orders_Customers" ManuallyRouted="false" />
         <AssociationConnector Association="MyStoreModel.FK_OrderDetails_Orders" ManuallyRouted="false" />
         <AssociationConnector Association="MyStoreModel.FK_OrderDetails_Products" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="MyStoreModel.Category1" Width="1.5" PointX="5.375" PointY="16" />
+        <EntityTypeShape EntityType="MyStoreModel.Customer1" Width="1.5" PointX="7.625" PointY="8.125" />
+        <EntityTypeShape EntityType="MyStoreModel.Order1" Width="1.5" PointX="7.625" PointY="11.25" />
+        <EntityTypeShape EntityType="MyStoreModel.OrderDetail1" Width="1.5" PointX="9.875" PointY="11.5" />
+        <EntityTypeShape EntityType="MyStoreModel.Product1" Width="1.5" PointX="7.625" PointY="15.5" />
+        <EntityTypeShape EntityType="MyStoreModel.User1" Width="1.5" PointX="5.375" PointY="10.25" />
+        <AssociationConnector Association="MyStoreModel.FK_Product_Category" />
+        <AssociationConnector Association="MyStoreModel.FK_Customer_User" />
+        <AssociationConnector Association="MyStoreModel.FK_Order_User" />
+        <AssociationConnector Association="MyStoreModel.FK_OrderDetail_Order" />
+        <AssociationConnector Association="MyStoreModel.FK_OrderDetail_Product" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

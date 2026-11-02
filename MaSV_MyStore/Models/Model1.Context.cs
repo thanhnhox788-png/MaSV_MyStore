@@ -31,5 +31,11 @@ namespace MaSV_MyStore.Models
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Category1> Categories1 { get; set; }
+        public virtual DbSet<Customer1> Customer1 { get; set; }
+        public virtual DbSet<Order1> Order1 { get; set; }
+        public virtual DbSet<OrderDetail1> OrderDetail1 { get; set; }
+        public virtual DbSet<Product1> Product1 { get; set; }
+        public virtual DbSet<User1> User1 { get; set; }
     }
 }

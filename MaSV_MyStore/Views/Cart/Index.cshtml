@@ -1,0 +1,93 @@
+﻿@model MaSV_MyStore.Models.ViewModels.Cart
+
+@{
+    ViewBag.Title = "Giỏ hàng";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Giỏ hàng của bạn</h2>
+
+    @if (Model.Items.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th style="width:140px">Số lượng</th>
+                        <th>Thành tiền</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                <img src="~/Images/@item.ProductImage"
+                                     style="width:80px; height:80px; object-fit:cover;"
+                                     class="rounded" />
+                            </td>
+                            <td>@item.ProductName</td>
+                            <td>@string.Format("{0:N0}", item.ProductPrice) đ</td>
+                            <td>
+                                @using (Html.BeginForm("UpdateQuantity", "Cart", FormMethod.Post, new { @class = "d-flex" }))
+                                {
+                                    @Html.Hidden("productId", item.ProductID)
+                                    <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control form-control-sm me-1" style="width:70px" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Cập nhật</button>
+                                }
+                            </td>
+                            <td class="fw-bold text-danger">
+                                @string.Format("{0:N0}", item.Total) đ
+                            </td>
+                            <td>
+                                @using (Html.BeginForm("RemoveFromCart", "Cart", FormMethod.Post))
+                                {
+                                    @Html.Hidden("productId", item.ProductID)
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">
+                    ← Tiếp tục mua hàng
+                </a>
+                <a href="@Url.Action("ClearCart", "Cart")" class="btn btn-outline-danger ms-2"
+                   onclick="return confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')">
+                    Xóa giỏ hàng
+                </a>
+            </div>
+            <div class="col-md-6 text-end">
+                <h4>
+                    Tổng cộng:
+                    <span class="text-danger">@string.Format("{0:N0}", Model.TotalAmount) đ</span>
+                </h4>
+                <a href="@Url.Action("Checkout", "Order")" class="btn btn-success btn-lg mt-2">
+                    Thanh toán
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center py-5">
+            <h4>Giỏ hàng trống</h4>
+            <p>Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">
+                Tiếp tục mua sắm
+            </a>
+        </div>
+    }
+</div>

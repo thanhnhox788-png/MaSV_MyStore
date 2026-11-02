@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - MyStore</title>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <!-- ========== HEADER ========== -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand fw-bold" href="@Url.Action("Index", "Home")">
+                <i class="bi bi-shop"></i> MyStore
+            </a>
+
+            <!-- Nút thu gọn mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCustomer">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarCustomer">
+                <!-- Menu Category -->
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Home")">Trang chủ</a>
+                    </li>
+
+                    <!-- Dropdown Danh mục -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            Danh mục
+                        </a>
+                        <ul class="dropdown-menu">
+                            @{
+                                var db = new MaSV_MyStore.Models.MyStoreEntities1();
+                                var categories = db.Categories.ToList();
+                            }
+                            @foreach (var cat in categories)
+                            {
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("ProductList", "Home", new { categoryId = cat.CategoryID })">
+                                        @cat.CategoryName
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                </ul>
+
+                <!-- Thanh tìm kiếm -->
+                <form class="d-flex me-3" method="get" action="@Url.Action("Index", "Home")">
+                    <input class="form-control me-2" type="search" name="searchTerm" placeholder="Tìm sản phẩm..."
+                           value="@(Request.QueryString["searchTerm"])">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+
+                <!-- Menu cá nhân + Giỏ hàng -->
+                <ul class="navbar-nav">
+                    <!-- Giỏ hàng -->
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="@Url.Action("Index", "Cart")">
+                            <i class="bi bi-cart3 fs-5"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                @{
+                                    int count = 0;
+                                    var cart = Session["Cart"] as MaSV_MyStore.Models.ViewModels.Cart;
+                                    if (cart != null)
+                                    {
+                                        count = cart.TotalQuantity;
+                                    }
+                                }
+                                @count
+                            </span>
+                        </a>
+                    </li>
+
+                    <!-- Tài khoản -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <span>Xin chào, @User.Identity.Name</span>
+                            }
+                            else
+                            {
+                                <span>Tài khoản</span>
+                            }
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("ProfileInfo", "Account")">
+                                        Thông tin tài khoản
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("MyOrder", "Order")">
+                                        Lịch sử mua hàng
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Logout", "Account")">
+                                        Đăng xuất
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Login", "Account")">
+                                        Đăng nhập
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Register", "Account")">
+                                        Đăng ký
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== NỘI DUNG TRANG ========== -->
+    <div class="container body-content" style="min-height: 70vh; padding-top: 20px; padding-bottom: 40px;">
+        @RenderBody()
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-1">© @DateTime.Now.Year - MyStore | Đồ án ASP.NET MVC5</p>
+            <p class="mb-0 text-muted">Sinh viên thực hiện</p>
+        </div>
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
