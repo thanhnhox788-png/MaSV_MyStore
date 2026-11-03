@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using PagedList;
+using MaSV_MyStore.Models;
 
-namespace MaSV_MyStore.Models.ViewModel
+namespace MaSV_MyStore.Models.ViewModels
 {
     public class ProductSearchVM
     {
@@ -8,6 +10,8 @@ namespace MaSV_MyStore.Models.ViewModel
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
         public string SortOrder { get; set; }
-        public List<Product> Products { get; set; }
+
+        // Đổi từ List thành IPagedList
+        public IPagedList<Product> Products { get; set; }
     }
 }
