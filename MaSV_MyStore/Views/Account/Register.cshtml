@@ -1,0 +1,95 @@
+﻿@model MaSV_MyStore.Models.ViewModels.RegisterVM
+
+@{
+    ViewBag.Title = "Đăng ký tài khoản";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container" style="max-width: 520px; margin-top: 40px;">
+    <h2 class="text-center mb-4">Đăng ký tài khoản</h2>
+
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+        <!-- Tên đăng nhập -->
+        <div class="mb-3">
+            <label class="form-label">Tên đăng nhập</label>
+            @Html.TextBoxFor(m => m.Username, new { @class = "form-control", maxlength = "50", placeholder = "Nhập tên đăng nhập" })
+            @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Mật khẩu -->
+        <div class="mb-3">
+            <label class="form-label">Mật khẩu</label>
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control", maxlength = "100", placeholder = "Nhập mật khẩu" })
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Xác nhận mật khẩu -->
+        <div class="mb-3">
+            <label class="form-label">Xác nhận mật khẩu</label>
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", maxlength = "100", placeholder = "Nhập lại mật khẩu" })
+            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Họ và tên -->
+        <div class="mb-3">
+            <label class="form-label">Họ và tên</label>
+            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", maxlength = "100", placeholder = "Nhập họ và tên" })
+            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Số điện thoại + Mã quốc gia -->
+        <div class="mb-3">
+            <label class="form-label">Số điện thoại</label>
+            <div class="input-group">
+                <select class="form-select" style="max-width: 140px;" name="CountryCode">
+                    <option value="+84" selected>+84 (VN)</option>
+                    <option value="+1">+1 (US)</option>
+                    <option value="+81">+81 (JP)</option>
+                    <option value="+82">+82 (KR)</option>
+                    <option value="+86">+86 (CN)</option>
+                    <option value="+65">+65 (SG)</option>
+                    <option value="+66">+66 (TH)</option>
+                    <option value="+60">+60 (MY)</option>
+                    <option value="+62">+62 (ID)</option>
+                    <option value="+63">+63 (PH)</option>
+                    <option value="+44">+44 (UK)</option>
+                    <option value="+33">+33 (FR)</option>
+                    <option value="+49">+49 (DE)</option>
+                    <option value="+61">+61 (AU)</option>
+                </select>
+
+                @Html.TextBoxFor(m => m.Phone, new
+                {
+                    @class = "form-control",
+                    maxlength = "10",
+                    placeholder = "Nhập 9-10 số điện thoại"
+                })
+            </div>
+            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", maxlength = "100", placeholder = "Nhập email" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Địa chỉ -->
+        <div class="mb-3">
+            <label class="form-label">Địa chỉ</label>
+            @Html.TextBoxFor(m => m.Address, new { @class = "form-control", maxlength = "100", placeholder = "Nhập địa chỉ" })
+            @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2">Đăng ký</button>
+    }
+
+    <div class="text-center mt-3">
+        <a href="@Url.Action("Login", "Account")">Đã có tài khoản? Đăng nhập ngay</a>
+    </div>
+</div>

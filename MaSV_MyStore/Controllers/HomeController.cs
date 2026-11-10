@@ -49,6 +49,21 @@ namespace MaSV_MyStore.Controllers
             return View(model);
         }
 
+        // ==========================================================
+        // ⭐️ THÊM HÀM PRODUCT DETAIL NÀY VÀO ĐỂ SỬA LỖI 404 ⭐️
+        // ==========================================================
+        // GET: Home/ProductDetail/5
+        public ActionResult ProductDetail(int id)
+        {
+            // Dùng db.Products (có chữ s) khớp với code gốc của bạn
+            var product = db.Products.FirstOrDefault(p => p.ProductID == id);
+            if (product == null)
+            {
+                return HttpNotFound();
+            }
+            return View(product);
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";

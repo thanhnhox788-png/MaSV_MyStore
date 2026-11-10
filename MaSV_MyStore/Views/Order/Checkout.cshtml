@@ -1,0 +1,139 @@
+﻿@model MaSV_MyStore.Models.ViewModels.Cart
+
+@{
+    ViewBag.Title = "Thanh toán đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Thanh Toán Đơn Hàng</h2>
+
+    @using (Html.BeginForm("Checkout", "Order", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="row">
+            <!-- Cột bên trái: Thông tin nhận hàng & Thanh toán -->
+            <div class="col-md-7">
+                <div class="card p-4 shadow-sm mb-4">
+                    <h4 class="text-primary mb-3">📦 1. Địa chỉ nhận hàng</h4>
+
+                    <div class="form-group mb-3">
+                        <label><strong>Họ và tên người nhận:</strong></label>
+                        <input type="text" name="customerName" value="@ViewBag.FullName" class="form-control" maxlength="100" required placeholder="Nhập họ và tên..." />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label><strong>Số điện thoại:</strong></label>
+                        <input type="text" name="phone" value="@ViewBag.Phone" class="form-control" maxlength="11" required placeholder="Nhập số điện thoại (tối đa 11 số)..." />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label><strong>Địa chỉ giao hàng chi tiết:</strong></label>
+                        <textarea name="address" class="form-control" rows="3" maxlength="100" required placeholder="Số nhà, tên đường, phường/xã...">@ViewBag.Address</textarea>
+                    </div>
+
+                    <!-- Phương thức thanh toán kiểu Shopee (Đã sửa cú pháp chuẩn không lỗi lồng thẻ) -->
+                    <div class="form-group mb-3">
+                        <label class="mb-2"><strong>Phương thức thanh toán:</strong></label>
+                        <div class="payment-methods">
+
+                            <!-- COD -->
+                            <div class="payment-card d-flex align-items-center p-3 mb-2 border rounded cursor-pointer selected" onclick="selectPayment('COD')">
+                                <input type="radio" name="paymentMethod" value="COD" checked class="form-check-input me-3" id="codRadio" />
+                                <div>
+                                    <span class="fw-bold d-block text-dark">Thanh toán khi nhận hàng (COD)</span>
+                                    <small class="text-muted">Thanh toán bằng tiền mặt khi nhận hàng.</small>
+                                </div>
+                            </div>
+
+                            <!-- Banking / QR Code -->
+                            <div class="payment-card d-flex align-items-center p-3 mb-2 border rounded cursor-pointer" onclick="selectPayment('Banking')">
+                                <input type="radio" name="paymentMethod" value="Banking" class="form-check-input me-3" id="bankingRadio" />
+                                <div>
+                                    <span class="fw-bold d-block text-dark">Chuyển khoản QR Ngân hàng</span>
+                                    <small class="text-muted">Quét mã QR qua ứng dụng ngân hàng bất kỳ.</small>
+                                </div>
+                            </div>
+
+                            <!-- MoMo -->
+                            <div class="payment-card d-flex align-items-center p-3 border rounded cursor-pointer" onclick="selectPayment('MoMo')">
+                                <input type="radio" name="paymentMethod" value="MoMo" class="form-check-input me-3" id="momoRadio" />
+                                <div>
+                                    <span class="fw-bold d-block text-danger">Ví điện tử MoMo</span>
+                                    <small class="text-muted">Thanh toán nhanh chóng bằng ứng dụng MoMo.</small>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột bên phải: Đơn hàng của bạn -->
+            <div class="col-md-5">
+                <div class="card p-4 shadow-sm">
+                    <h4 class="text-primary mb-3">🛒 Đơn hàng của bạn</h4>
+
+                    <ul class="list-group mb-3">
+                        @foreach (var item in Model.Items)
+                        {
+                            <li class="list-group-item d-flex justify-content-between lh-condensed py-3">
+                                <div>
+                                    <h6 class="my-0">@item.ProductName</h6>
+                                    <small class="text-muted">SL: @item.Quantity</small>
+                                </div>
+                                <span class="text-muted">@item.Total.ToString("N0") đ</span>
+                            </li>
+                        }
+                        <li class="list-group-item d-flex justify-content-between bg-light py-3">
+                            <span><strong>Tổng tiền thanh toán:</strong></span>
+                            <strong class="text-danger fs-5">@Model.TotalAmount.ToString("N0") đ</strong>
+                        </li>
+                    </ul>
+
+                    <button type="submit" class="btn btn-success btn-lg w-100 mb-2">
+                        <i class="fa fa-check-circle"></i> ĐẶT HÀNG NGAY
+                    </button>
+
+                    <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-secondary w-100">Quay lại giỏ hàng</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- CSS bổ trợ giao diện phương thức thanh toán -->
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .payment-card:hover {
+        background-color: #f8f9fa;
+        border-color: #0d6efd !important;
+    }
+
+    .payment-card.selected {
+        border-color: #198754 !important;
+        background-color: #f1f8f5;
+    }
+</style>
+
+<!-- Script tương tác chọn phương thức thanh toán -->
+<script>
+    function selectPayment(method) {
+        document.querySelectorAll(".payment-card").forEach(c => c.classList.remove("selected"));
+        if (method === 'COD') {
+            document.getElementById('codRadio').checked = true;
+            document.getElementById('codRadio').closest('.payment-card').classList.add('selected');
+        } else if (method === 'Banking') {
+            document.getElementById('bankingRadio').checked = true;
+            document.getElementById('bankingRadio').closest('.payment-card').classList.add('selected');
+        } else if (method === 'MoMo') {
+            document.getElementById('momoRadio').checked = true;
+            document.getElementById('momoRadio').closest('.payment-card').classList.add('selected');
+        }
+    }
+</script>

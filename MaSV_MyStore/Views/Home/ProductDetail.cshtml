@@ -1,68 +1,102 @@
-﻿@model MaSV_MyStore.Models.ViewModels.ProductDetailVM
+﻿@model MaSV_MyStore.Models.Product
 
 @{
-    ViewBag.Title = "Chi tiết sản phẩm - " + Model.Product.ProductName;
-    Layout = "~/Views/Shared/_CustomerLayout.cshtml";   // dùng Customer Layout
+    ViewBag.Title = Model.ProductName;
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+
+    // Xử lý link ảnh online hoặc local
+    string imgPath = "";
+    if (!string.IsNullOrEmpty(Model.ProductName) && Model.ProductName.Contains("Conan"))
+    {
+        imgPath = "https://cdn1.fahasa.com/media/catalog/product/t/h/tham-tu-lung-danh-conan_tap-23_-tb-2023.jpg";
+    }
+    else if (!string.IsNullOrEmpty(Model.ProductName) && (Model.ProductName.Contains("Babylon") || Model.ProductName.Contains("giàu nhất")))
+    {
+        imgPath = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
+    }
+    else if (!string.IsNullOrEmpty(Model.ProductName) && Model.ProductName.Contains("Tâm Lý Học"))
+    {
+        imgPath = "https://cdn1.fahasa.com/media/flashmagazine/images/page_images/tam_ly_hoc_dam_dong/2024_08_26_11_34_56_1-390x510.jpg";
+    }
+    else
+    {
+        string dbImage = !string.IsNullOrEmpty(Model.ProductImage) ? Model.ProductImage.Trim() : "";
+        imgPath = string.IsNullOrEmpty(dbImage)
+            ? "https://via.placeholder.com/400x500?text=No+Image"
+            : Url.Content("~/Content/images/" + dbImage);
+    }
 }
 
-<div class="container mt-4">
-    <!-- Thông tin sản phẩm -->
-    <div class="row">
-        <div class="col-md-5">
-            <img src="~/Images/@Model.Product.ProductImage"
-                 class="img-fluid rounded shadow"
-                 alt="@Model.Product.ProductName"
-                 style="max-height: 450px; object-fit: cover; width: 100%;" />
-        </div>
+<div class="container my-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Chi tiết sản phẩm</li>
+        </ol>
+    </nav>
 
-        <div class="col-md-7">
-            <h2>@Model.Product.ProductName</h2>
-            <p>
-                <span class="badge bg-secondary">@Model.Product.Category.CategoryName</span>
-            </p>
-
-            <h3 class="text-danger my-3">
-                @string.Format("{0:N0}", Model.Product.ProductPrice) VNĐ
-            </h3>
-
-            <p><strong>Mô tả sản phẩm:</strong></p>
-            <p>@Model.Product.ProductDescription</p>
-            <p class="text-muted">
-                Đã bán: <strong>0</strong> sản phẩm
-            </p>    
-
-            <!-- Form thêm vào giỏ hàng -->
-            <div class="mt-4">
-                @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
-                {
-                    @Html.Hidden("productId", Model.Product.ProductID)
-
-                    <div class="input-group mb-3" style="max-width: 200px;">
-                        <span class="input-group-text">Số lượng</span>
-                        <input type="number" name="quantity" value="@Model.Quantity"
-                               min="1" class="form-control" />
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg me-2">
-                        <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
-                    </button>
-
-                    @Html.ActionLink("Quay lại trang chủ", "Index", "Home", null,
-                        new { @class = "btn btn-outline-secondary btn-lg" })
-                }
+    <div class="row bg-white p-4 shadow-sm rounded">
+        <!-- CỘT TRÁI: HÌNH ẢNH SẢN PHẨM -->
+        <div class="col-md-5 text-center mb-4 mb-md-0">
+            <div class="border rounded p-3 bg-light">
+                <img src="@imgPath" alt="@Model.ProductName" class="img-fluid rounded" style="max-height: 400px; object-fit: contain;" />
             </div>
         </div>
+
+        <!-- CỘT PHẢI: THÔNG TIN CHI TIẾT & ĐẶT HÀNG -->
+        <div class="col-md-7">
+            <h2 class="fw-bold mb-3">@Model.ProductName</h2>
+
+            <div class="bg-light p-3 rounded mb-3">
+                <span class="text-danger fw-bold fs-3">
+                    @string.Format("{0:N0}", Model.ProductPrice) ₫
+                </span>
+            </div>
+
+            <p class="text-muted mb-4">
+                @(string.IsNullOrEmpty(Model.ProductDescription) ? "Chưa có mô tả chi tiết cho sản phẩm này." : Model.ProductDescription)
+            </p>
+
+            <hr class="my-4">
+
+            <!-- KHU VỰC CHỌN SỐ LƯỢNG VÀ NÚT MUA HÀNG -->
+            @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+            {
+                <!-- ⭐️ TRUYỀN ĐÚNG TÊN THAM SỐ productId ĐỂ CONTROLLER NHẬN DIỆN CHÍNH XÁC -->
+                <input type="hidden" name="productId" value="@Model.ProductID" />
+
+                <div class="mb-4 d-flex align-items-center">
+                    <label class="fw-bold me-3">Số lượng:</label>
+                    <div class="input-group" style="width: 140px;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQty()">-</button>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" class="form-control text-center" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQty()">+</button>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-outline-danger btn-lg flex-fill py-2">
+                        <i class="fas fa-cart-plus me-2"></i> Thêm vào giỏ hàng
+                    </button>
+
+                    <button type="submit" formaction="@Url.Action("BuyNow", "Cart", new { id = Model.ProductID })" class="btn btn-danger btn-lg flex-fill py-2">
+                        <i class="fas fa-bolt me-2"></i> Mua ngay
+                    </button>
+                </div>
+            }
+        </div>
     </div>
-
-    <hr class="my-5" />
-
-    <!-- Sản phẩm tương tự -->
-    <h4 class="mb-3">Sản phẩm tương tự</h4>
-    @Html.Partial("_PVRelatedProduct", Model)
-
-    <hr class="my-5" />
-
-    <!-- Top Deals / Sản phẩm bán chạy -->
-    <h4 class="mb-3">Sản phẩm bán chạy cùng danh mục</h4>
-    @Html.Partial("_PVTopProduct", Model)
 </div>
+
+<script>
+    function increaseQty() {
+        var input = document.getElementById('quantity');
+        input.value = parseInt(input.value) + 1;
+    }
+    function decreaseQty() {
+        var input = document.getElementById('quantity');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+</script>
