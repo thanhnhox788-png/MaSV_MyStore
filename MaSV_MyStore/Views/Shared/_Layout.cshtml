@@ -1,36 +1,335 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - MyStore Application</title>
+
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfbf9 !important;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Navbar kính mờ sang trọng */
+        .navbar {
+            background-color: rgba(26, 29, 33, 0.96) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        /* --- 🌟 HIỆU ỨNG LOGO THƯƠNG HIỆU CAO CẤP --- */
+        .brand-logo-wrapper {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none !important;
+            padding: 4px 8px;
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+            .brand-logo-wrapper:hover {
+                transform: translateY(-2px);
+            }
+
+        /* Biểu tượng quyển sách mở kết hợp vương miện tỏa sáng */
+        .brand-icon-box {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #1e1e2f 0%, #0f1016 100%);
+            border: 1.5px solid rgba(245, 158, 11, 0.5);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.25);
+            transition: all 0.4s ease;
+        }
+
+        .brand-logo-wrapper:hover .brand-icon-box {
+            border-color: #f59e0b;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+            transform: rotate(-5deg) scale(1.05);
+        }
+
+        .brand-icon-box i {
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Tên thương hiệu phong cách tối giản, sang trọng */
+        .brand-text-group {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-subtitle {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: #f59e0b;
+        }
+
+        /* --- 🎨 MÀU SẮC ĐỒNG BỘ CHO CÁC NÚT BẤM TRÊN NAVBAR --- */
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 0.9rem !important;
+            border-radius: 8px;
+            margin-right: 4px;
+        }
+
+        .nav-link-item {
+            color: #d1d5db !important;
+        }
+
+            .nav-link-item:hover {
+                color: #ffffff !important;
+                background-color: rgba(255, 255, 255, 0.08);
+            }
+
+        /* Nút Đăng nhập: Xanh dương chuyên nghiệp */
+        .nav-btn-login {
+            background-color: rgba(37, 99, 235, 0.15);
+            color: #60a5fa !important;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+
+            .nav-btn-login:hover {
+                background-color: #2563eb !important;
+                color: #ffffff !important;
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            }
+
+        /* Nút Đăng ký: Xanh ngọc thanh lịch */
+        .nav-btn-register {
+            background-color: rgba(13, 148, 136, 0.15);
+            color: #2dd4bf !important;
+            border: 1px solid rgba(45, 212, 191, 0.3);
+        }
+
+            .nav-btn-register:hover {
+                background-color: #0d9488 !important;
+                color: #ffffff !important;
+                box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+            }
+
+        /* Nút Giỏ hàng: Cam hổ phách nổi bật */
+        .nav-btn-cart {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #fbbf24 !important;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+            .nav-btn-cart:hover {
+                background-color: #f59e0b !important;
+                color: #1a1d21 !important;
+                box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            }
+
+        .body-content {
+            flex: 1;
+            padding-top: 2.5rem;
+            padding-bottom: 2.5rem;
+        }
+
+        /* --- 🌟 FOOTER LUXURY BOOKSTORE --- */
+        .footer-section {
+            background-color: #1a1d21;
+            color: #98a0a6;
+            padding: 3.5rem 0 2rem 0;
+            margin-top: auto;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            text-align: left;
+        }
+
+            .footer-section h5, .footer-section h6 {
+                color: #ffffff;
+            }
+
+            .footer-section a:hover {
+                color: #f59e0b !important;
+            }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark sticky-top">
         <div class="container">
-            @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+            <!-- ⭐️ LOGO SANG TRỌNG & ĐẲNG CẤP -->
+            <a href="@Url.Action("Index", "Home")" class="brand-logo-wrapper">
+                <div class="brand-icon-box">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="brand-text-group ms-2">
+                    <span class="brand-title">MYSTORE</span>
+                    <span class="brand-subtitle">BookStore</span>
+                </div>
+            </a>
+
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                <!-- Menu bên trái -->
+                <ul class="navbar-nav flex-grow-1 ms-3">
+                    <li class="nav-item">@Html.ActionLink("Trang chủ", "Index", "Home", new { area = "" }, new { @class = "nav-link nav-link-item" })</li>
+                    <li class="nav-item">@Html.ActionLink("Giới thiệu", "About", "Home", new { area = "" }, new { @class = "nav-link nav-link-item" })</li>
+                    <li class="nav-item">@Html.ActionLink("Liên hệ", "Contact", "Home", new { area = "" }, new { @class = "nav-link nav-link-item" })</li>
+                </ul>
+
+                <!-- Khu vực bên phải: Đăng nhập, Đăng ký, Giỏ hàng -->
+                <ul class="navbar-nav align-items-center">
+                    @if (Session["Account"] != null || Session["Username"] != null || Session["Customer"] != null)
+                    {
+                        var userName = Session["Username"] ?? Session["Account"] ?? "Khách hàng";
+                        var fullName = Session["FullName"] ?? userName;
+
+                        <li class="nav-item dropdown me-2">
+                            <!-- Nút bấm hiển thị tên tài khoản -->
+                            <a class="nav-link dropdown-toggle text-warning fw-bold px-3 py-2 rounded-3" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: rgba(245, 158, 11, 0.1);">
+                                <i class="fas fa-user-circle me-1"></i> Chào, @userName
+                            </a>
+                            <!-- Menu thông tin tài khoản và số dư xổ xuống khi bấm vào -->
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-3 mt-2 rounded-4" aria-labelledby="userDropdown" style="width: 280px; background-color: #ffffff;">
+                                <li class="text-center pb-3 border-bottom">
+                                    <div class="bg-dark text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-2 shadow-sm" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-user fa-lg"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-1">@fullName</h6>
+                                    <span class="badge bg-light text-secondary border">Tài khoản: @userName</span>
+                                </li>
+
+                                <!-- Hiển thị số dư tài khoản -->
+                                <li class="py-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted small"><i class="fas fa-wallet text-warning me-1"></i> Số dư tài khoản:</span>
+                                        <span class="fw-bold text-success">1,500,000 đ</span>
+                                    </div>
+                                </li>
+
+                                <li><a class="dropdown-item py-2 rounded-2 mt-2 text-dark fw-semibold" href="#"><i class="fas fa-user-edit me-2 text-warning"></i>Thông tin tài khoản</a></li>
+                                <li><a class="dropdown-item py-2 rounded-2 text-dark fw-semibold" href="#"><i class="fas fa-box-open me-2 text-warning"></i>Đơn hàng của tôi</a></li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                                <li><a class="dropdown-item text-danger py-2 rounded-2 fw-bold" href="@Url.Action("Logout", "Account")"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item me-2">
+                            <a class="nav-link nav-btn-login px-3 py-2" href="@Url.Action("Login", "Account")">
+                                <i class="fas fa-sign-in-alt me-1"></i> Đăng nhập
+                            </a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link nav-btn-register px-3 py-2" href="@Url.Action("Register", "Account")">
+                                <i class="fas fa-user-plus me-1"></i> Đăng ký
+                            </a>
+                        </li>
+                    }
+
+                    <li class="nav-item">
+                        <a class="nav-link nav-btn-cart px-3 py-2 fw-bold" href="@Url.Action("Index", "Cart")">
+                            <i class="fas fa-shopping-cart me-1"></i> Giỏ hàng
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
+
     <div class="container body-content">
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
     </div>
+
+    <!-- 🌟 FOOTER MÔ TẢ THƯƠNG HIỆU & CAM KẾT -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="row g-4 justify-content-between">
+                <!-- Cột giới thiệu thương hiệu -->
+                <div class="col-lg-5 text-start">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-3 bg-dark text-warning p-2 me-2 d-flex align-items-center justify-content-center shadow-sm border border-warning" style="width: 38px; height: 38px;">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-0">MyStore Premium Bookstore</h5>
+                    </div>
+                    <p class="small mb-3 text-secondary" style="line-height: 1.7;">
+                        Nền tảng trực tuyến cung cấp những đầu sách tinh chọn, sách kinh điển thế giới và tri thức đỉnh cao. Chúng tôi cam kết mang đến trải nghiệm mua sắm mượt mà, sang trọng và đồng hành cùng hành trình phát triển bản thân của bạn.
+                    </p>
+                    <div class="d-flex align-items-center text-warning gap-1">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <span class="text-secondary small ms-2 fw-semibold">Được tin chọn bởi cộng đồng tri thức</span>
+                    </div>
+                </div>
+
+                <!-- Cột liên kết nhanh -->
+                <div class="col-lg-3 text-start">
+                    <h6 class="fw-bold text-white mb-3">Khám phá</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="@Url.Action("Index", "Home")" class="text-decoration-none text-secondary">Trang chủ</a></li>
+                        <li class="mb-2"><a href="@Url.Action("About", "Home")" class="text-decoration-none text-secondary">Giới thiệu về MyStore</a></li>
+                        <li class="mb-2"><a href="@Url.Action("Contact", "Home")" class="text-decoration-none text-secondary">Hỗ trợ & Liên hệ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Cột cam kết dịch vụ -->
+                <div class="col-lg-3 text-start">
+                    <h6 class="fw-bold text-white mb-3">Cam kết dịch vụ</h6>
+                    <p class="small mb-2 text-secondary"><i class="fas fa-check-circle text-success me-2"></i> 100% Sách bản quyền chính hãng</p>
+                    <p class="small mb-2 text-secondary"><i class="fas fa-shipping-fast text-primary me-2"></i> Giao hàng nhanh chóng toàn quốc</p>
+                    <p class="small mb-0 text-secondary"><i class="fas fa-shield-alt text-warning me-2"></i> Bảo mật thanh toán tuyệt đối</p>
+                </div>
+            </div>
+
+            <hr class="my-4 text-secondary opacity-25">
+
+            <!-- Dòng bản quyền copyright -->
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="small mb-0 text-secondary">&copy; @DateTime.Now.Year - MyStore Application. Bản quyền chính hãng.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                    <span class="small text-secondary">Trải nghiệm tri thức đỉnh cao</span>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

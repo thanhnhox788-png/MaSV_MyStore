@@ -1,19 +1,177 @@
 ﻿@{
-    ViewBag.Title = "Contact";
+    ViewBag.Title = "Liên hệ - MyStore";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<main aria-labelledby="title">
-    <h2 id="title">@ViewBag.Title.</h2>
-    <h3>@ViewBag.Message</h3>
 
-    <address>
-        One Microsoft Way<br />
-        Redmond, WA 98052-6399<br />
-        <abbr title="Phone">P:</abbr>
-        425.555.0100
-    </address>
+<style>
+    /* --- 🌟 HIỆU ỨNG THÔNG TIN TRỤ SỞ SANG TRỌNG --- */
+    .contact-info-card {
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+    }
 
-    <address>
-        <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-        <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-    </address>
-</main>
+    .contact-info-item {
+        padding: 14px 16px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background-color: #faf9f6;
+        border: 1px solid rgba(212, 175, 55, 0.1);
+    }
+
+        .contact-info-item:hover {
+            background-color: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+    .contact-icon-box {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #1e1e2f 0%, #0f1016 100%);
+        color: #fbbf24;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+</style>
+
+<div class="container my-5">
+    <!-- Header Liên hệ -->
+    <div class="text-center mb-5">
+        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3 shadow-sm">
+            <i class="fas fa-envelope me-1"></i> Kết Nối Với Chúng Tôi
+        </span>
+        <h1 class="fw-bold text-dark display-5">Liên Hệ MyStore Bookstore</h1>
+        <p class="text-muted lead mt-2">
+            Chúng tôi luôn sẵn sàng lắng nghe mọi góp ý, thắc mắc hoặc yêu cầu hỗ trợ từ bạn.
+        </p>
+    </div>
+
+    <div class="row g-5">
+        <!-- Thông tin trụ sở (Đã được thiết kế lại sang trọng & hiện đại) -->
+        <div class="col-lg-6">
+            <div class="p-4 p-md-5 bg-white rounded-4 shadow-sm contact-info-card h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="rounded-3 bg-dark text-warning p-2 me-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-0">Thông Tin Trụ Sở</h3>
+                    </div>
+                    <p class="text-muted small mb-4">Trải nghiệm không gian sách tinh chọn và hệ thống dịch vụ khách hàng chuẩn mực tại trụ sở chính của chúng tôi.</p>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    <!-- Địa chỉ -->
+                    <div class="contact-info-item d-flex align-items-center">
+                        <div class="contact-icon-box me-3">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small text-uppercase fw-bold letter-spacing-1 d-block mb-1">Địa chỉ cửa hàng</span>
+                            <h6 class="fw-bold text-dark mb-0">123 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</h6>
+                        </div>
+                    </div>
+
+                    <!-- Hotline -->
+                    <div class="contact-info-item d-flex align-items-center">
+                        <div class="contact-icon-box me-3">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small text-uppercase fw-bold letter-spacing-1 d-block mb-1">Hotline hỗ trợ</span>
+                            <h6 class="fw-bold text-dark mb-0">+84 (028) 3812 3456 <span class="text-muted small fw-normal">(8:00 - 21:00)</span></h6>
+                        </div>
+                    </div>
+
+                    <!-- Support Email -->
+                    <div class="contact-info-item d-flex align-items-center">
+                        <div class="contact-icon-box me-3">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small text-uppercase fw-bold letter-spacing-1 d-block mb-1">Hỗ trợ khách hàng (Support)</span>
+                            <h6 class="fw-bold mb-0">
+                                <a href="mailto:thanhnhox788@gmail.com" class="text-decoration-none text-dark hover-warning">thanhnhox788@gmail.com</a>
+                            </h6>
+                        </div>
+                    </div>
+
+                    <!-- Marketing Email -->
+                    <div class="contact-info-item d-flex align-items-center">
+                        <div class="contact-icon-box me-3">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small text-uppercase fw-bold letter-spacing-1 d-block mb-1">Hợp tác & Marketing</span>
+                            <h6 class="fw-bold mb-0">
+                                <a href="mailto:thanhnhox788@gmail.com" class="text-decoration-none text-dark hover-warning">thanhnhox788@gmail.com</a>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form gửi tin nhắn liên hệ nhanh -->
+        <div class="col-lg-6">
+            <div class="p-4 p-md-5 bg-white rounded-4 shadow-sm border h-100 position-relative">
+                <h3 class="fw-bold text-dark mb-4">Gửi Tin Nhắn Cho Chúng Tôi</h3>
+
+                <!-- Khu vực thông báo thành công (Ẩn mặc định) -->
+                <div id="successMessage" class="alert alert-success p-4 rounded-4 shadow-sm text-center d-none my-4">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h5 class="fw-bold text-success">Gửi tin nhắn thành công!</h5>
+                    <p class="text-muted mb-0" style="font-size: 1.05rem; line-height: 1.6;">
+                        Tin nhắn hỗ trợ của quý khách đã được gửi đi, vui lòng đợi trong 1 ngày để nhận được lời phản hồi sớm nhất.
+                    </p>
+                    <button type="button" class="btn btn-outline-success btn-sm mt-3 fw-bold" onclick="resetForm()">Gửi tin nhắn khác</button>
+                </div>
+
+                <!-- Form nhập liệu -->
+                <form id="contactForm" onsubmit="handleSubmit(event)">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Họ và tên của bạn (Tối đa 50 ký tự)</label>
+                        <input type="text" id="txtName" class="form-control py-2 rounded-3" maxlength="50" placeholder="Nhập họ tên..." required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Địa chỉ Email (Tối đa 50 ký tự)</label>
+                        <input type="email" id="txtEmail" class="form-control py-2 rounded-3" maxlength="50" placeholder="Nhập email của bạn..." required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Nội dung cần hỗ trợ (Tối đa 150 ký tự)</label>
+                        <textarea id="txtContent" class="form-control rounded-3" rows="4" maxlength="150" placeholder="Nhập nội dung tin nhắn..." required></textarea>
+                        <div class="form-text text-end small">Giới hạn 150 ký tự</div>
+                    </div>
+                    <button type="submit" class="btn btn-warning text-dark fw-bold px-4 py-3 w-100 rounded-3 shadow-sm">
+                        <i class="fas fa-paper-plane me-2"></i> Gửi Tin Nhắn Ngay
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault(); // Ngăn chặn load lại trang mặc định của form
+
+            // Ẩn form đi và hiện bảng thông báo thành công
+            document.getElementById('contactForm').classList.add('d-none');
+            document.getElementById('successMessage').classList.remove('d-none');
+        }
+
+        function resetForm() {
+            // Reset dữ liệu form và hiện lại form
+            document.getElementById('contactForm').reset();
+            document.getElementById('contactForm').classList.remove('d-none');
+            document.getElementById('successMessage').classList.add('d-none');
+        }
+    </script>
+}

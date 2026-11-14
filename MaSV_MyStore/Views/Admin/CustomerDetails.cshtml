@@ -1,0 +1,54 @@
+﻿@model MaSV_MyStore.Models.Customer
+
+@{
+    ViewBag.Title = "Chi tiết khách hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var c = Model;
+
+    // ⭐️ Tự động quét và lấy đúng dữ liệu bất kể tên cột trong CSDL là gì
+    string cusId = "";
+    try { cusId = (c.GetType().GetProperty("CustomerID")?.GetValue(c) ?? c.GetType().GetProperty("MaKH")?.GetValue(c) ?? c.GetType().GetProperty("MaKhachHang")?.GetValue(c))?.ToString(); } catch { }
+
+    string fullName = "";
+    try { fullName = (c.GetType().GetProperty("CustomerName")?.GetValue(c) ?? c.GetType().GetProperty("HoTen")?.GetValue(c) ?? c.GetType().GetProperty("TenKhachHang")?.GetValue(c) ?? c.GetType().GetProperty("FullName")?.GetValue(c))?.ToString() ?? "N/A"; } catch { }
+
+    string username = "";
+    try { username = (c.GetType().GetProperty("Username")?.GetValue(c) ?? c.GetType().GetProperty("TenTaiKhoan")?.GetValue(c) ?? c.GetType().GetProperty("Account")?.GetValue(c) ?? c.GetType().GetProperty("User")?.GetValue(c))?.ToString() ?? "N/A"; } catch { }
+
+    string email = "";
+    try { email = (c.GetType().GetProperty("Email")?.GetValue(c) ?? c.GetType().GetProperty("Gmail")?.GetValue(c) ?? c.GetType().GetProperty("ThuDienTu")?.GetValue(c))?.ToString() ?? "N/A"; } catch { }
+
+    string phone = "";
+    try { phone = (c.GetType().GetProperty("Phone")?.GetValue(c) ?? c.GetType().GetProperty("SoDienThoai")?.GetValue(c) ?? c.GetType().GetProperty("DienThoai")?.GetValue(c) ?? c.GetType().GetProperty("SDT")?.GetValue(c))?.ToString() ?? "N/A"; } catch { }
+
+    string address = "";
+    try { address = (c.GetType().GetProperty("Address")?.GetValue(c) ?? c.GetType().GetProperty("DiaChi")?.GetValue(c) ?? c.GetType().GetProperty("DiaChiNhanHang")?.GetValue(c))?.ToString() ?? "N/A"; } catch { }
+}
+
+<div class="container my-4">
+    <div class="card shadow-sm p-4 border-0">
+        <h2 class="fw-bold mb-4 text-primary">
+            <i class="fas fa-user-circle me-2"></i>Chi tiết khách hàng #@cusId
+        </h2>
+
+        <!-- Thẻ hiển thị thông tin chi tiết khách hàng -->
+        <div class="row bg-light p-4 rounded shadow-sm mb-4">
+            <div class="col-md-6 mb-3">
+                <p class="mb-2"><strong>Họ tên khách hàng:</strong> <span class="fs-5 text-dark fw-bold">@fullName</span></p>
+                <p class="mb-2"><strong>Tên tài khoản (Acc):</strong> <span class="text-secondary fw-bold">@username</span></p>
+                <p class="mb-0"><strong>Email / Gmail đăng ký:</strong> <span class="text-primary fw-bold">@email</span></p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <p class="mb-2"><strong>Số điện thoại:</strong> <span class="text-success fw-bold">@phone</span></p>
+                <p class="mb-0"><strong>Địa chỉ:</strong> <span class="text-dark">@address</span></p>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a href="@Url.Action("Customers", "Admin")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách khách hàng
+            </a>
+        </div>
+    </div>
+</div>

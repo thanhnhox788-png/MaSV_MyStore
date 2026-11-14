@@ -2,92 +2,238 @@
 
 @{
     ViewBag.Title = "Giỏ hàng của bạn";
-    Layout = "~/Views/Shared/_CustomerLayout.cshtml"; // Giữ đúng layout chung của trang bạn
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Hoặc _CustomerLayout tùy theo project của bạn
 }
 
-<div class="container my-5">
-    <h2 class="fw-bold mb-4">Giỏ hàng của bạn</h2>
+<style>
+    /* --- 🌟 HIỆU ỨNG VÀ TRANG TRÍ SANG TRỌNG CHO GIỎ HÀNG --- */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(25px);
+        }
 
-    @if (Model == null || !Model.Items.Any())
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .cart-page-wrapper {
+        animation: fadeInUp 0.7s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    .cart-heading {
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: #1a1d21;
+    }
+
+    /* Khung giỏ hàng trống đẳng cấp */
+    .empty-cart-box {
+        background: linear-gradient(135deg, #fdfbf7 0%, #f4f1ea 100%);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 16px;
+        padding: 55px 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        animation: fadeInUp 0.8s ease forwards;
+    }
+
+    /* Bảng giỏ hàng */
+    .luxury-cart-card {
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 16px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    /* 🎨 MÀU SẮC & HIỆU ỨNG CÁC NÚT BẤM */
+    .btn-cart-update {
+        background-color: rgba(37, 99, 235, 0.1);
+        color: #2563eb;
+        border: 1px solid rgba(37, 99, 235, 0.3);
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-cart-update:hover {
+            background-color: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+    .btn-checkout-luxury {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        color: #ffffff !important;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 35px;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+        transition: all 0.3s ease;
+    }
+
+        .btn-checkout-luxury:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+            filter: brightness(1.05);
+        }
+
+    .btn-continue-luxury {
+        background-color: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-continue-luxury:hover {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+
+    .btn-clear-luxury {
+        background-color: rgba(220, 38, 38, 0.1);
+        color: #dc2626;
+        border: 1px solid rgba(220, 38, 38, 0.3);
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-clear-luxury:hover {
+            background-color: #dc2626;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+</style>
+
+<div class="container my-5 cart-page-wrapper">
+    <h2 class="cart-heading mb-4"><i class="fas fa-shopping-bag text-warning me-2"></i> Giỏ hàng của bạn</h2>
+
+    @if (Model == null || Model.Items == null || !Model.Items.Any())
     {
-        <div class="alert alert-warning text-center p-4">
-            <h4>Giỏ hàng của bạn đang trống!</h4>
-            <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">Tiếp tục mua sắm</a>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="empty-cart-box">
+                    <div class="fs-1 text-warning mb-3">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-2">Giỏ hàng của bạn đang trống!</h3>
+                    <p class="text-muted mb-4">Hãy khám phá thêm những tựa sách hay và chọn mua ngay nhé.</p>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-checkout-luxury px-4 py-2">
+                        <i class="fas fa-arrow-left me-2"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
         </div>
     }
     else
     {
-        <div class="table-responsive">
-            <table class="table table-bordered align-middle text-center">
-                <thead class="table-dark">
-                    <tr>
-                        <th style="width: 120px;">Hình ảnh</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Đơn giá</th>
-                        <th style="width: 150px;">Số lượng</th>
-                        <th>Thành tiền</th>
-                        <th style="width: 80px;">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Items)
-                    {
-                        // Xử lý hiển thị ảnh linh hoạt (ảnh online cho Conan hoặc ảnh từ CSDL)
-                        string imgPath = "";
-                        if (!string.IsNullOrEmpty(item.ProductName) && item.ProductName.Contains("Conan"))
-                        {
-                            imgPath = "https://cdn1.fahasa.com/media/catalog/product/t/h/tham-tu-lung-danh-conan_tap-23_-tb-2023.jpg";
-                        }
-                        else if (!string.IsNullOrEmpty(item.ProductImage))
-                        {
-                            imgPath = Url.Content("~/Content/images/" + item.ProductImage.Trim());
-                        }
-                        else
-                        {
-                            imgPath = "https://via.placeholder.com/100x120?text=No+Image";
-                        }
-
+        <div class="card luxury-cart-card p-3 mb-4">
+            <div class="table-responsive">
+                <table class="table table-borderless align-middle text-center mb-0">
+                    <thead class="table-dark rounded">
                         <tr>
-                            <td>
-                                <img src="@imgPath" alt="@item.ProductName" class="img-fluid rounded" style="width: 70px; height: 90px; object-fit: cover;" />
-                            </td>
-                            <td class="text-start fw-bold">@item.ProductName</td>
-                            <td class="text-danger fw-bold">@item.ProductPrice.ToString("N0") đ</td>
-                            <td>
-                                <!-- Form cập nhật số lượng trực tiếp trong giỏ hàng -->
-                                @using (Html.BeginForm("UpdateQuantity", "Cart", FormMethod.Post, new { @class = "d-flex justify-content-center align-items-center" }))
-                                {
-                                    <input type="hidden" name="productId" value="@item.ProductID" />
-                                    <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control text-center me-2" style="width: 70px;" />
-                                    <button type="submit" class="btn btn-sm btn-outline-primary" title="Cập nhật số lượng">Cập nhật</button>
-                                }
-                            </td>
-                            <td class="text-danger fw-bold">@item.Total.ToString("N0") đ</td>
-                            <td>
-                                <a href="@Url.Action("RemoveFromCart", "Cart", new { productId = item.ProductID })" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này không?');">
-                                    <i class="fas fa-trash-alt"></i> Xóa
-                                </a>
-                            </td>
+                            <th style="width: 120px;" class="py-3">Hình ảnh</th>
+                            <th class="text-start py-3">Tên sản phẩm</th>
+                            <th class="py-3">Đơn giá</th>
+                            <th style="width: 170px;" class="py-3">Số lượng</th>
+                            <th class="py-3">Thành tiền</th>
+                            <th style="width: 90px;" class="py-3">Thao tác</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            string imgPath = "";
+                            string productImg = item.GetType().GetProperty("ProductImage")?.GetValue(item)?.ToString()
+                                               ?? item.GetType().GetProperty("HinhAnh")?.GetValue(item)?.ToString()
+                                               ?? item.GetType().GetProperty("Image")?.GetValue(item)?.ToString() ?? "";
+
+                            string productName = item.GetType().GetProperty("ProductName")?.GetValue(item)?.ToString()
+                                                  ?? item.GetType().GetProperty("TenSanPham")?.GetValue(item)?.ToString()
+                                                  ?? item.GetType().GetProperty("Name")?.GetValue(item)?.ToString() ?? "Sản phẩm";
+
+                            if (!string.IsNullOrEmpty(productImg))
+                            {
+                                if (productImg.StartsWith("http://") || productImg.StartsWith("https://"))
+                                {
+                                    imgPath = productImg;
+                                }
+                                else
+                                {
+                                    imgPath = Url.Content("~/Content/images/" + productImg.Trim());
+                                }
+                            }
+
+                            if (string.IsNullOrEmpty(imgPath) || imgPath.Contains("placeholder"))
+                            {
+                                string name = productName.ToLower();
+                                if (name.Contains("conan"))
+                                {
+                                    imgPath = "https://cdn1.fahasa.com/media/catalog/product/t/h/tham-tu-lung-danh-conan_tap-23_-tb-2023.jpg";
+                                }
+                                else if (name.Contains("babylon") || name.Contains("giàu nhất"))
+                                {
+                                    imgPath = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
+                                }
+                                else if (name.Contains("tâm lý") || name.Contains("đám đông"))
+                                {
+                                    imgPath = "https://pos.nvncdn.com/fd5775-40602/ps/20240115_0ajcFr7hKU.jpeg?v=1705298977";
+                                }
+                                else
+                                {
+                                    imgPath = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
+                                }
+                            }
+
+                            <tr class="border-bottom">
+                                <td class="py-3">
+                                    <img src="@imgPath" alt="@productName" class="img-fluid rounded shadow-sm" style="width: 70px; height: 95px; object-fit: cover;" onerror="this.src='https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg';" />
+                                </td>
+                                <td class="text-start fw-bold text-dark py-3">@productName</td>
+                                <td class="text-danger fw-bold py-3">@item.ProductPrice.ToString("N0") đ</td>
+                                <td class="py-3">
+                                    @using (Html.BeginForm("UpdateQuantity", "Cart", FormMethod.Post, new { @class = "d-flex justify-content-center align-items-center" }))
+                                    {
+                                        <input type="hidden" name="productId" value="@item.ProductID" />
+                                        <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control text-center me-2" style="width: 65px;" />
+                                        <button type="submit" class="btn btn-sm btn-cart-update" title="Cập nhật">Cập nhật</button>
+                                    }
+                                </td>
+                                <td class="text-danger fw-bold py-3">@item.Total.ToString("N0") đ</td>
+                                <td class="py-3">
+                                    <a href="@Url.Action("RemoveFromCart", "Cart", new { productId = item.ProductID })" class="btn btn-danger btn-sm px-2" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này không?');" title="Xóa">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-4 p-3 bg-light rounded shadow-sm">
-            <div>
-                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">
+        <!-- Khung tổng tiền và điều hướng -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center p-4 bg-white rounded shadow-sm luxury-cart-card">
+            <div class="mb-3 mb-md-0">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-continue-luxury px-4 py-2">
                     <i class="fas fa-arrow-left me-1"></i> Tiếp tục mua hàng
                 </a>
-                <a href="@Url.Action("ClearCart", "Cart")" class="btn btn-outline-danger ms-2" onclick="return confirm('Bạn có muốn xóa toàn bộ giỏ hàng không?');">
-                    Xóa giỏ hàng
+                <a href="@Url.Action("ClearCart", "Cart")" class="btn btn-clear-luxury px-4 py-2 ms-2" onclick="return confirm('Bạn có muốn xóa toàn bộ giỏ hàng không?');">
+                    <i class="fas fa-trash-alt me-1"></i> Xóa giỏ hàng
                 </a>
             </div>
 
             <div class="text-end">
-                <h4 class="mb-2">Tổng cộng: <span class="text-danger fw-bold">@Model.TotalAmount.ToString("N0") đ</span></h4>
-                <a href="@Url.Action("Checkout", "Order")" class="btn btn-success btn-lg px-5">
-                    Thanh toán <i class="fas fa-arrow-right ms-1"></i>
+                <h4 class="mb-3 text-secondary">Tổng cộng: <span class="text-danger fw-bold fs-3">@Model.TotalAmount.ToString("N0") đ</span></h4>
+                <a href="@Url.Action("Checkout", "Order")" class="btn btn-checkout-luxury">
+                    Tiến hành thanh toán <i class="fas fa-arrow-right ms-2"></i>
                 </a>
             </div>
         </div>

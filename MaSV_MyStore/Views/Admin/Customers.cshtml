@@ -1,0 +1,84 @@
+﻿@model IEnumerable<MaSV_MyStore.Models.Customer>
+
+@{
+    ViewBag.Title = "Quản lý khách hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Quản lý danh sách khách hàng</h2>
+        <span class="text-muted"><i class="fas fa-users me-1"></i>Tổng số: @(Model != null ? Model.Count() : 0) khách hàng</span>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Mã KH</th>
+                            <th class="text-start">Họ tên khách hàng</th>
+                            <th class="text-start">Email</th>
+                            <th>Số điện thoại</th>
+                            <th class="text-start">Địa chỉ</th>
+                            <th style="width: 130px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model != null && Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    var customerId = "";
+                                    try { customerId = (item.GetType().GetProperty("CustomerID")?.GetValue(item) ?? item.GetType().GetProperty("MaKhachHang")?.GetValue(item))?.ToString(); } catch { }
+
+                                    string customerName = "";
+                                    try { customerName = (item.GetType().GetProperty("CustomerName")?.GetValue(item) ?? item.GetType().GetProperty("HoTen")?.GetValue(item) ?? item.GetType().GetProperty("TenKhachHang")?.GetValue(item))?.ToString() ?? ""; } catch { }
+
+                                    string email = "";
+                                    try { email = item.GetType().GetProperty("Email")?.GetValue(item)?.ToString() ?? ""; } catch { }
+
+                                    string phone = "";
+                                    try { phone = (item.GetType().GetProperty("Phone")?.GetValue(item) ?? item.GetType().GetProperty("SoDienThoai")?.GetValue(item))?.ToString() ?? ""; } catch { }
+
+                                    string address = "";
+                                    try { address = (item.GetType().GetProperty("Address")?.GetValue(item) ?? item.GetType().GetProperty("DiaChi")?.GetValue(item))?.ToString() ?? ""; } catch { }
+
+                                    <tr>
+                                        <td class="fw-bold text-secondary">#@customerId</td>
+                                        <td class="text-start fw-bold">@customerName</td>
+                                        <td class="text-start text-muted">@email</td>
+                                        <td>@phone</td>
+                                        <td class="text-start text-truncate" style="max-width: 200px;" title="@address">@address</td>
+                                        <td>
+                                            <!-- ⭐️ ĐÃ GẮN ĐƯỜNG DẪN ĐẾN HÀM XEM CHI TIẾT KHÁCH HÀNG -->
+                                            <a href="@Url.Action("CustomerDetails", "Admin", new { id = customerId })" class="btn btn-sm btn-outline-info fw-bold px-3" title="Xem chi tiết khách hàng">
+                                                <i class="fas fa-eye me-1"></i> Chi tiết
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-muted py-4">Chưa có thông tin khách hàng nào trong hệ thống.</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

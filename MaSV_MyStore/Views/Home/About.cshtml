@@ -1,9 +1,77 @@
 ﻿@{
-    ViewBag.Title = "About";
+    ViewBag.Title = "Giới thiệu - MyStore";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<main aria-labelledby="title">
-    <h2 id="title">@ViewBag.Title.</h2>
-    <h3>@ViewBag.Message</h3>
 
-    <p>Use this area to provide additional information.</p>
-</main>
+<div class="container my-5">
+    <!-- Header Giới thiệu -->
+    <div class="text-center mb-5">
+        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3">
+            <i class="fas fa-crown me-1"></i> Về Chúng Tôi
+        </span>
+        <h1 class="fw-bold text-dark display-5">Chào mừng đến với MyStore Premium Bookstore</h1>
+        <p class="text-muted lead mt-2" style="max-width: 700px; margin: 0 auto;">
+            Nơi hội tụ những tinh hoa tri thức nhân loại, mang đến trải nghiệm đọc sách đẳng cấp, sang trọng và truyền cảm hứng phát triển bản thân mỗi ngày.
+        </p>
+    </div>
+
+    <!-- Nội dung chi tiết -->
+    <div class="row g-5 align-items-center mb-5">
+        <div class="col-lg-6">
+            <div class="p-4 bg-white rounded-4 shadow-sm border border-light">
+                <h3 class="fw-bold text-dark mb-3">
+                    <i class="fas fa-book-reader text-warning me-2"></i> Sứ Mệnh Của Chúng Tôi
+                </h3>
+                <p class="text-muted" style="line-height: 1.8;">
+                    Tại <strong>MyStore</strong>, chúng tôi tin rằng mỗi cuốn sách là một chìa khóa mở ra cánh cửa tri thức và thành công. Sứ mệnh của chúng tôi không chỉ là cung cấp những ấn phẩm sách bản quyền chất lượng cao từ kinh tế, kỹ năng sống cho đến văn học trinh thám, mà còn kiến tạo một không gian mua sắm trực tuyến tinh tế, tận tâm và chuyên nghiệp nhất cho cộng đồng yêu sách Việt Nam.
+                </p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="p-4 bg-white rounded-4 shadow-sm text-center border-top border-4 border-warning h-100">
+                        <i class="fas fa-shield-alt fa-2x text-warning mb-3"></i>
+                        <h5 class="fw-bold text-dark">100% Chính Hãng</h5>
+                        <p class="small text-muted mb-0">Cam kết sách bản quyền phát hành chuẩn chất lượng.</p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-4 bg-white rounded-4 shadow-sm text-center border-top border-4 border-dark h-100">
+                        <i class="fas fa-shipping-fast fa-2x text-dark mb-3"></i>
+                        <h5 class="fw-bold text-dark">Giao Hàng Siêu Tốc</h5>
+                        <p class="small text-muted mb-0">Đóng gói cẩn thận, vận chuyển nhanh chóng toàn quốc.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Giá trị cốt lõi -->
+    <div class="bg-light p-5 rounded-4 shadow-sm mb-4">
+        <h3 class="fw-bold text-dark text-center mb-4">Giá Trị Cốt Lõi Tại MyStore</h3>
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="text-warning mb-2"><i class="fas fa-gem fa-2x"></i></div>
+                    <h5 class="fw-bold text-dark">Chất Lượng Đỉnh Cao</h5>
+                    <p class="text-muted small">Tuyển chọn từng đầu sách giá trị, nội dung sâu sắc và hình thức trình bày sang trọng.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="text-warning mb-2"><i class="fas fa-heart fa-2x"></i></div>
+                    <h5 class="fw-bold text-dark">Khách Hàng Là Trọng Tâm</h5>
+                    <p class="text-muted small">Luôn lắng nghe, hỗ trợ tận tình và mang lại sự hài lòng tuyệt đối cho bạn đọc.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="text-warning mb-2"><i class="fas fa-handshake fa-2x"></i></div>
+                    <h5 class="fw-bold text-dark">Uy Tín & Bền Vững</h5>
+                    <p class="text-muted small">Xây dựng cộng đồng tri thức gắn kết, văn minh và phát triển thịnh vượng cùng thời gian.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

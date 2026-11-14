@@ -25,7 +25,6 @@ namespace MaSV_MyStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Kiểm tra username đã tồn tại chưa
                 var existingUser = db.Users.FirstOrDefault(u => u.Username == model.Username);
                 if (existingUser != null)
                 {
@@ -33,7 +32,6 @@ namespace MaSV_MyStore.Controllers
                     return View(model);
                 }
 
-                // 1. Tạo User
                 var user = new User
                 {
                     Username = model.Username,
@@ -42,11 +40,10 @@ namespace MaSV_MyStore.Controllers
                 };
                 db.Users.Add(user);
 
-                // 2. Tạo Customer
                 var customer = new Customer
                 {
                     Username = model.Username,
-                    CustomerName = model.FullName,   // ← Tên khách hàng lúc đăng ký
+                    CustomerName = model.FullName,
                     Phone = model.Phone,
                     Email = model.Email,
                     Address = model.Address,
@@ -92,18 +89,20 @@ namespace MaSV_MyStore.Controllers
                 if (user != null)
                 {
                     FormsAuthentication.SetAuthCookie(user.Username, false);
+
+                    // ⭐ ĐỒNG BỘ CÁC BIẾN SESSION ĐỂ KHỚP VỚI CARTCONTROLLER ⭐
                     Session["Username"] = user.Username;
+                    Session["Account"] = user.Username; // Khớp với hàm GetLoggedUser() trong CartController
                     Session["Role"] = user.Role;
 
-                    // ⭐ LẤY THÊM TÊN KHÁCH HÀNG TỪ BẢNG CUSTOMER ĐỂ HIỂN THỊ LÊN WEB ⭐
                     var customer = db.Customers.FirstOrDefault(c => c.Username == user.Username);
                     if (customer != null)
                     {
-                        Session["FullName"] = customer.CustomerName; // Lưu tên đầy đủ vào Session
+                        Session["FullName"] = customer.CustomerName;
                     }
                     else
                     {
-                        Session["FullName"] = user.Username; // Phòng hờ nếu không tìm thấy bảng Customer thì lấy tạm Username
+                        Session["FullName"] = user.Username;
                     }
 
                     return RedirectToAction("Index", "Home");

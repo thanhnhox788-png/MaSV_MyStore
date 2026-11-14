@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web.Mvc;
 using MaSV_MyStore.Models;
@@ -22,8 +23,9 @@ namespace MaSV_MyStore.Controllers
             return View(cart);
         }
 
-        // 2. POST: Order/Checkout - Xử lý lưu đơn hàng khi bấm "ĐẶT HÀNG NGAY"
+        // 2. POST: Order/Checkout - Xử lý lưu đơn hàng từ form của bạn
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Checkout(string customerName, string phone, string address, string paymentMethod)
         {
             var cart = cartService.GetCart();
@@ -39,33 +41,35 @@ namespace MaSV_MyStore.Controllers
                 {
                     try
                     {
-                        // ⭐️ Fix lỗi LINQ to Entities bằng cách dùng AsEnumerable() để so sánh số điện thoại an toàn
-                        var customer = db.Customers.AsEnumerable().FirstOrDefault(c =>
-                            (c.GetType().GetProperty("Phone")?.GetValue(c)?.ToString() == phone) ||
-                            (c.GetType().GetProperty("SoDienThoai")?.GetValue(c)?.ToString() == phone)
-                        );
+                        // Tạo khách hàng mới (hoặc vãng lai)
+                        var customer = new Customer();
 
-                        if (customer == null)
-                        {
-                            customer = new Customer();
-                            customer.GetType().GetProperty("CustomerName")?.SetValue(customer, customerName);
-                            customer.GetType().GetProperty("HoTen")?.SetValue(customer, customerName);
+                        customer.GetType().GetProperty("CustomerName")?.SetValue(customer, customerName);
+                        customer.GetType().GetProperty("HoTen")?.SetValue(customer, customerName);
 
-                            customer.GetType().GetProperty("Phone")?.SetValue(customer, phone);
-                            customer.GetType().GetProperty("SoDienThoai")?.SetValue(customer, phone);
+                        customer.GetType().GetProperty("Phone")?.SetValue(customer, phone);
+                        customer.GetType().GetProperty("SoDienThoai")?.SetValue(customer, phone);
 
-                            customer.GetType().GetProperty("CustomerAddress")?.SetValue(customer, address);
-                            customer.GetType().GetProperty("DiaChi")?.SetValue(customer, address);
+                        customer.GetType().GetProperty("CustomerAddress")?.SetValue(customer, address);
+                        customer.GetType().GetProperty("DiaChi")?.SetValue(customer, address);
 
-                            db.Customers.Add(customer);
-                            db.SaveChanges(); // Lưu để sinh ra CustomerID
-                        }
+                        string uniqueKey = "KH_" + DateTime.Now.Ticks.ToString().Substring(10);
+                        customer.GetType().GetProperty("Username")?.SetValue(customer, uniqueKey);
+                        customer.GetType().GetProperty("TenDangNhap")?.SetValue(customer, uniqueKey);
+                        customer.GetType().GetProperty("Account")?.SetValue(customer, uniqueKey);
+                        customer.GetType().GetProperty("TaiKhoan")?.SetValue(customer, uniqueKey);
 
-                        // Lấy ra CustomerID
+                        customer.GetType().GetProperty("Email")?.SetValue(customer, uniqueKey + "@gmail.com");
+                        customer.GetType().GetProperty("Password")?.SetValue(customer, "123456");
+                        customer.GetType().GetProperty("MatKhau")?.SetValue(customer, "123456");
+
+                        db.Customers.Add(customer);
+                        db.SaveChanges(); // Lưu để sinh CustomerID
+
                         int customerId = (int)(customer.GetType().GetProperty("CustomerID")?.GetValue(customer)
-                                      ?? customer.GetType().GetProperty("MaKH")?.GetValue(customer) ?? 1);
+                                              ?? customer.GetType().GetProperty("MaKH")?.GetValue(customer) ?? 1);
 
-                        // Tạo đối tượng Order (Đơn hàng)
+                        // Tạo Đơn hàng (Order)
                         var order = new Order();
                         order.GetType().GetProperty("CustomerID")?.SetValue(order, customerId);
                         order.GetType().GetProperty("MaKH")?.SetValue(order, customerId);
@@ -75,6 +79,7 @@ namespace MaSV_MyStore.Controllers
 
                         order.GetType().GetProperty("DeliveryAddress")?.SetValue(order, address);
                         order.GetType().GetProperty("DiaChiGiaoHang")?.SetValue(order, address);
+                        order.GetType().GetProperty("Address")?.SetValue(order, address);
 
                         order.GetType().GetProperty("PaymentMethod")?.SetValue(order, paymentMethod);
                         order.GetType().GetProperty("PhuongThucThanhToan")?.SetValue(order, paymentMethod);
@@ -83,12 +88,12 @@ namespace MaSV_MyStore.Controllers
                         order.GetType().GetProperty("TrangThai")?.SetValue(order, "Đang xử lý");
 
                         db.Orders.Add(order);
-                        db.SaveChanges(); // Lưu để sinh ra OrderID
+                        db.SaveChanges(); // Lưu để sinh OrderID
 
                         int orderId = (int)(order.GetType().GetProperty("OrderID")?.GetValue(order)
-                                    ?? order.GetType().GetProperty("MaDonHang")?.GetValue(order) ?? 0);
+                                          ?? order.GetType().GetProperty("MaDonHang")?.GetValue(order) ?? 0);
 
-                        // Lưu chi tiết đơn hàng (OrderDetails)
+                        // Lưu chi tiết đơn hàng (OrderDetail)
                         foreach (var item in cart.Items)
                         {
                             var detail = new OrderDetail();
@@ -114,12 +119,13 @@ namespace MaSV_MyStore.Controllers
                         cart.Clear();
                         cartService.SaveCart(cart);
 
-                        // Chuyển hướng đến trang thông báo đặt hàng thành công
+                        // Chuyển hướng sang trang thành công kèm theo Mã đơn hàng
                         return RedirectToAction("OrderSuccess", new { id = orderId });
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
+                        System.Diagnostics.Debug.WriteLine("Lỗi thanh toán: " + ex.Message);
                         ModelState.AddModelError("", "Lỗi khi lưu đơn hàng vào CSDL: " + ex.Message);
                         return View(cart);
                     }
@@ -127,7 +133,7 @@ namespace MaSV_MyStore.Controllers
             }
         }
 
-        // 3. GET: Order/OrderSuccess - Trang hiển thị thông báo đặt hàng thành công
+        // 3. GET: Order/OrderSuccess
         public ActionResult OrderSuccess(int id)
         {
             ViewBag.OrderId = id;

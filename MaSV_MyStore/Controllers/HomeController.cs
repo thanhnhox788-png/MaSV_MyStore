@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using MaSV_MyStore.Models;
 using MaSV_MyStore.Models.ViewModel;
-using PagedList;
 
 namespace MaSV_MyStore.Controllers
 {
@@ -10,70 +10,62 @@ namespace MaSV_MyStore.Controllers
     {
         private MyStoreEntities1 db = new MyStoreEntities1();
 
-        // GET: Home/Index
-        public ActionResult Index(string searchTerm, int? page)
+        public ActionResult Index()
         {
-            var model = new HomeProductVM();
-            var products = db.Products.AsQueryable();
-
-            // Tìm kiếm sản phẩm theo từ khóa
-            if (!string.IsNullOrEmpty(searchTerm))
+            try
             {
-                model.SearchTerm = searchTerm;
-                products = products.Where(p => p.ProductName.Contains(searchTerm) ||
-                                              p.ProductDescription.Contains(searchTerm) ||
-                                              p.Category.CategoryName.Contains(searchTerm));
+                // Lấy danh sách sản phẩm từ cơ sở dữ liệu
+                var products = db.Products.ToList();
+
+                // Nếu bạn dùng ViewModel (HomeProductVM)
+                var viewModel = new HomeProductVM();
+
+                // Gán vào thuộc tính chứa sản phẩm (hỗ trợ tự động các tên phổ biến)
+                var prop = viewModel.GetType().GetProperty("Products")
+                        ?? viewModel.GetType().GetProperty("ListProduct")
+                        ?? viewModel.GetType().GetProperty("DanhSachSanPham");
+
+                if (prop != null && prop.CanWrite)
+                {
+                    prop.SetValue(viewModel, products);
+                    return View(viewModel);
+                }
+
+                // Nếu không dùng ViewModel mà truyền trực tiếp List<Product>
+                return View(products);
             }
-
-            int pageSize = 6; // Số sản phẩm trên mỗi trang
-            int pageNumber = (page ?? 1);
-
-            // Lấy danh sách ID top 10 sản phẩm bán chạy từ bảng OrderDetails
-            var topProductIDs = db.OrderDetails
-                .GroupBy(od => od.ProductID)
-                .OrderByDescending(g => g.Count())
-                .Select(g => g.Key)
-                .Take(10)
-                .ToList();
-
-            // Gán danh sách sản phẩm nổi bật vào ViewModel
-            model.FeaturedProducts = products
-                .Where(p => topProductIDs.Contains(p.ProductID))
-                .ToList();
-
-            // Lấy danh sách sản phẩm mới và phân trang
-            model.NewProducts = products
-                .OrderByDescending(p => p.ProductID)
-                .ToPagedList(pageNumber, pageSize);
-
-            return View(model);
-        }
-
-        // ==========================================================
-        // ⭐️ THÊM HÀM PRODUCT DETAIL NÀY VÀO ĐỂ SỬA LỖI 404 ⭐️
-        // ==========================================================
-        // GET: Home/ProductDetail/5
-        public ActionResult ProductDetail(int id)
-        {
-            // Dùng db.Products (có chữ s) khớp với code gốc của bạn
-            var product = db.Products.FirstOrDefault(p => p.ProductID == id);
-            if (product == null)
+            catch (Exception ex)
             {
-                return HttpNotFound();
+                System.Diagnostics.Debug.WriteLine("Lỗi tải sản phẩm: " + ex.Message);
+                return View(new HomeProductVM());
             }
-            return View(product);
         }
 
-        public ActionResult About()
+        // 🌟 BỔ SUNG HÀM DETAILS NÀY ĐỂ XEM CHI TIẾT SẢN PHẨM
+        public ActionResult Details(int id)
         {
-            ViewBag.Message = "Your application description page.";
-            return View();
+            try
+            {
+                // Tìm sản phẩm theo ID trong cơ sở dữ liệu
+                var product = db.Products.FirstOrDefault(p => p.ProductID == id);
+                // Lưu ý: Nếu cột khóa chính trong CSDL của bạn tên là MaSP hoặc ID, 
+                // hãy đổi p.ProductID thành p.MaSP hoặc p.ID tương ứng.
+
+                if (product == null)
+                {
+                    return HttpNotFound("Không tìm thấy sản phẩm này.");
+                }
+
+                return View(product);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi xem chi tiết sản phẩm: " + ex.Message);
+                return RedirectToAction("Index");
+            }
         }
 
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-            return View();
-        }
+        public ActionResult About() => View();
+        public ActionResult Contact() => View();
     }
 }

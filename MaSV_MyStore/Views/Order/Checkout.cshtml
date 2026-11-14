@@ -5,37 +5,38 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <h2 class="text-center mb-4">Thanh Toán Đơn Hàng</h2>
+<div class="container my-4">
+    <h2 class="text-center fw-bold mb-4">Thanh Toán Đơn Hàng</h2>
 
     @using (Html.BeginForm("Checkout", "Order", FormMethod.Post))
     {
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
 
         <div class="row">
-            <!-- Cột bên trái: Thông tin nhận hàng & Thanh toán -->
+            <!-- Cột bên trái: Thông tin nhận hàng & Phương thức thanh toán -->
             <div class="col-md-7">
-                <div class="card p-4 shadow-sm mb-4">
-                    <h4 class="text-primary mb-3">📦 1. Địa chỉ nhận hàng</h4>
+                <div class="card p-4 shadow-sm border-0 mb-4">
+                    <h4 class="text-primary mb-3 fw-bold">📦 1. Địa chỉ nhận hàng</h4>
 
                     <div class="form-group mb-3">
-                        <label><strong>Họ và tên người nhận:</strong></label>
-                        <input type="text" name="customerName" value="@ViewBag.FullName" class="form-control" maxlength="100" required placeholder="Nhập họ và tên..." />
+                        <label class="form-label fw-bold">Họ và tên người nhận:</label>
+                        <input type="text" name="customerName" class="form-control" maxlength="100" required placeholder="Nhập họ và tên đầy đủ..." />
                     </div>
 
                     <div class="form-group mb-3">
-                        <label><strong>Số điện thoại:</strong></label>
-                        <input type="text" name="phone" value="@ViewBag.Phone" class="form-control" maxlength="11" required placeholder="Nhập số điện thoại (tối đa 11 số)..." />
+                        <label class="form-label fw-bold">Số điện thoại:</label>
+                        <input type="tel" name="phone" class="form-control" maxlength="11" required placeholder="Nhập số điện thoại liên hệ..." />
                     </div>
 
                     <div class="form-group mb-3">
-                        <label><strong>Địa chỉ giao hàng chi tiết:</strong></label>
-                        <textarea name="address" class="form-control" rows="3" maxlength="100" required placeholder="Số nhà, tên đường, phường/xã...">@ViewBag.Address</textarea>
+                        <label class="form-label fw-bold">Địa chỉ giao hàng chi tiết:</label>
+                        <textarea name="address" class="form-control" rows="3" maxlength="200" required placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."></textarea>
                     </div>
 
-                    <!-- Phương thức thanh toán kiểu Shopee (Đã sửa cú pháp chuẩn không lỗi lồng thẻ) -->
+                    <!-- Phương thức thanh toán -->
                     <div class="form-group mb-3">
-                        <label class="mb-2"><strong>Phương thức thanh toán:</strong></label>
+                        <label class="form-label fw-bold mb-2">Phương thức thanh toán:</label>
                         <div class="payment-methods">
 
                             <!-- COD -->
@@ -43,7 +44,7 @@
                                 <input type="radio" name="paymentMethod" value="COD" checked class="form-check-input me-3" id="codRadio" />
                                 <div>
                                     <span class="fw-bold d-block text-dark">Thanh toán khi nhận hàng (COD)</span>
-                                    <small class="text-muted">Thanh toán bằng tiền mặt khi nhận hàng.</small>
+                                    <small class="text-muted">Thanh toán bằng tiền mặt trực tiếp khi nhận hàng.</small>
                                 </div>
                             </div>
 
@@ -70,33 +71,38 @@
                 </div>
             </div>
 
-            <!-- Cột bên phải: Đơn hàng của bạn -->
+            <!-- Cột bên phải: Tóm tắt đơn hàng -->
             <div class="col-md-5">
-                <div class="card p-4 shadow-sm">
-                    <h4 class="text-primary mb-3">🛒 Đơn hàng của bạn</h4>
+                <div class="card p-4 shadow-sm border-0 bg-light">
+                    <h4 class="text-primary mb-3 fw-bold">🛒 Đơn hàng của bạn</h4>
 
                     <ul class="list-group mb-3">
-                        @foreach (var item in Model.Items)
+                        @if (Model != null && Model.Items != null)
                         {
-                            <li class="list-group-item d-flex justify-content-between lh-condensed py-3">
-                                <div>
-                                    <h6 class="my-0">@item.ProductName</h6>
-                                    <small class="text-muted">SL: @item.Quantity</small>
-                                </div>
-                                <span class="text-muted">@item.Total.ToString("N0") đ</span>
+                            foreach (var item in Model.Items)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                    <div>
+                                        <h6 class="my-0 fw-bold">@item.ProductName</h6>
+                                        <small class="text-muted">Số lượng: @item.Quantity</small>
+                                    </div>
+                                    <span class="text-danger fw-bold">@item.Total.ToString("N0") đ</span>
+                                </li>
+                            }
+                            <li class="list-group-item d-flex justify-content-between bg-white py-3">
+                                <span class="fw-bold">Tổng tiền thanh toán:</span>
+                                <strong class="text-danger fs-5">@Model.TotalAmount.ToString("N0") đ</strong>
                             </li>
                         }
-                        <li class="list-group-item d-flex justify-content-between bg-light py-3">
-                            <span><strong>Tổng tiền thanh toán:</strong></span>
-                            <strong class="text-danger fs-5">@Model.TotalAmount.ToString("N0") đ</strong>
-                        </li>
                     </ul>
 
-                    <button type="submit" class="btn btn-success btn-lg w-100 mb-2">
-                        <i class="fa fa-check-circle"></i> ĐẶT HÀNG NGAY
+                    <button type="submit" class="btn btn-success btn-lg w-100 fw-bold mb-2 shadow-sm">
+                        <i class="fa fa-check-circle me-1"></i> ĐẶT HÀNG NGAY
                     </button>
 
-                    <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-secondary w-100">Quay lại giỏ hàng</a>
+                    <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-arrow-left me-1"></i> Quay lại giỏ hàng
+                    </a>
                 </div>
             </div>
         </div>

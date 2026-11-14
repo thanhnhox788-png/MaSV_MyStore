@@ -1,0 +1,78 @@
+﻿@model IEnumerable<MaSV_MyStore.Models.Order>
+
+@{
+    ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Quản lý danh sách đơn hàng</h2>
+        <span class="text-muted"><i class="fas fa-shopping-cart me-1"></i>Tổng số: @(Model != null ? Model.Count() : 0) đơn hàng</span>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Mã đơn hàng</th>
+                            <th>Mã khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model != null && Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    var orderId = "";
+                                    try { orderId = (item.GetType().GetProperty("OrderID")?.GetValue(item) ?? item.GetType().GetProperty("MaDonHang")?.GetValue(item))?.ToString(); } catch { }
+
+                                    var customerId = "";
+                                    try { customerId = (item.GetType().GetProperty("CustomerID")?.GetValue(item) ?? item.GetType().GetProperty("MaKhachHang")?.GetValue(item))?.ToString(); } catch { }
+
+                                    string orderDateStr = "";
+                                    try
+                                    {
+                                        var rawDate = item.GetType().GetProperty("OrderDate")?.GetValue(item) ?? item.GetType().GetProperty("NgayDat")?.GetValue(item);
+                                        if (rawDate != null && rawDate is DateTime dt)
+                                        {
+                                            orderDateStr = dt.ToString("dd/MM/yyyy HH:mm");
+                                        }
+                                    }
+                                    catch { }
+
+                                    <tr>
+                                        <td class="fw-bold text-primary">#@orderId</td>
+                                        <td>@(string.IsNullOrEmpty(customerId) ? "N/A" : customerId)</td>
+                                        <td>@orderDateStr</td>
+                                        <td>
+                                            <span class="badge bg-warning text-dark px-3 py-2">Đang xử lý</span>
+                                        </td>
+                                        <td>
+                                            <!-- ⭐️ ĐÃ GẮN ĐƯỜNG DẪN CHUẨN TỚI HÀM DETAILS KÈM ID -->
+                                            <a href="@Url.Action("Details", "Admin", new { id = orderId })" class="btn btn-sm btn-outline-primary fw-bold px-3">
+                                                <i class="fas fa-eye me-1"></i> Chi tiết
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-muted py-4">Chưa có đơn hàng nào trong hệ thống.</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

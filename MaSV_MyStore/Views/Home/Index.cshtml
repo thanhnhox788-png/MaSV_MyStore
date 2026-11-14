@@ -1,158 +1,214 @@
-﻿@model MaSV_MyStore.Models.ViewModel.HomeProductVM
-@using PagedList.Mvc
+﻿@model IEnumerable<MaSV_MyStore.Models.Product>
 
 @{
-    ViewBag.Title = "Trang chủ";
-    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+    ViewBag.Title = "Trang chủ - MyStore";
 }
 
-<!-- Hero Banner -->
-<div class="hero text-center mb-5">
-    <div class="container">
-        <h1 class="display-5 fw-bold mb-3">Chào mừng đến với MyStore</h1>
-        <p class="lead mb-4">Khám phá hàng ngàn sản phẩm chất lượng với giá tốt nhất</p>
+<style>
+    /* --- 🌟 HIỆU ỨNG XUẤT HIỆN MƯỢT MÀ KHI MỚI VÀO WEB (FADE-IN & SLIDE-UP) --- */
+    /* Lưu ý: Dùng @@keyframes trong Razor view để tránh lỗi biên dịch C# */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(25px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-banner {
+        animation: fadeInUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        background: linear-gradient(135deg, #12121c 0%, #1e1e2f 100%);
+        color: #fff;
+        border-radius: 16px;
+        padding: 45px 40px;
+        margin-bottom: 40px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .section-title {
+        animation: fadeInUp 0.9s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    /* Hiệu ứng xuất hiện lần lượt cho từng cột sản phẩm tạo chiều sâu */
+    .product-col {
+        opacity: 0;
+        animation: fadeInUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+        .product-col:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .product-col:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .product-col:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .product-col:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+    /* Card sản phẩm hiệu ứng bay bổng khi rê chuột */
+    .product-card {
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+            border-color: rgba(212, 175, 55, 0.5) !important;
+        }
+
+    /* Khu vực hình ảnh sách */
+    .product-img-wrapper {
+        height: 270px;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        position: relative;
+    }
+
+        .product-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+    .product-card:hover .product-img-wrapper img {
+        transform: scale(1.06);
+    }
+
+    /* Nhãn giá tiền nổi bật */
+    .price-tag {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #d63384;
+        letter-spacing: -0.3px;
+    }
+
+    /* Tối ưu hóa các nút bấm Thêm giỏ hàng & Mua ngay */
+    .product-card .btn {
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease;
+        padding: 8px 12px;
+    }
+
+        .product-card .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+        }
+</style>
+
+<div class="container my-4">
+    <!-- Banner chào mừng -->
+    <div class="hero-banner text-center text-md-start d-md-flex align-items-center justify-content-between">
+        <div>
+            <h1 class="fw-bold mb-2"><i class="fas fa-crown text-warning me-2"></i>MyStore Premium BookStore</h1>
+            <p class="text-light opacity-75 mb-0">Khám phá kho tàng tri thức đỉnh cao với những đầu sách tinh chọn và giá tốt nhất.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a href="@Url.Action("Products", "Admin")" class="btn btn-warning fw-bold px-4 py-2 shadow-sm text-dark">
+                <i class="fas fa-user-shield me-2"></i>Quản trị Admin
+            </a>
+        </div>
     </div>
-</div>
 
-<!-- ====================== SẢN PHẨM NỔI BẬT ====================== -->
-<h3 class="mb-4 fw-bold">
-    <i class="fas fa-star text-warning me-2"></i>Sản phẩm nổi bật
-</h3>
+    <!-- Tiêu đề sản phẩm -->
+    <div class="d-flex align-items-center mb-4 section-title">
+        <h3 class="fw-bold text-dark mb-0"><i class="fas fa-star text-warning me-2"></i>Sản phẩm nổi bật</h3>
+    </div>
 
-<div class="row g-4 mb-5">
-    @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Any())
-    {
-        foreach (var item in Model.FeaturedProducts)
-        {
-            string imgPath = "";
-            if (!string.IsNullOrEmpty(item.ProductName) && item.ProductName.Contains("Conan"))
-            {
-                imgPath = "ĐIỀN_LINK_ANH_CONAN_CỦA_BẠN_VÀO_ĐÂY";
-            }
-            else if (!string.IsNullOrEmpty(item.ProductName) && (item.ProductName.Contains("Babylon") || item.ProductName.Contains("giàu nhất")))
-            {
-                imgPath = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
-            }
-            else if (!string.IsNullOrEmpty(item.ProductName) && item.ProductName.Contains("Tâm Lý Học"))
-            {
-                // ⭐️ ĐÃ GÁN LINK ẢNH TÂM LÝ HỌC ĐÁM ĐÔNG CỦA BẠN ⭐️
-                imgPath = "https://cdn1.fahasa.com/media/flashmagazine/images/page_images/tam_ly_hoc_dam_dong/2024_08_26_11_34_56_1-390x510.jpg";
-            }
-            else
-            {
-                string dbImage = !string.IsNullOrEmpty(item.ProductImage) ? item.ProductImage.Trim() : "";
-                imgPath = string.IsNullOrEmpty(dbImage)
-                    ? "https://via.placeholder.com/300x200?text=No+Image"
-                    : Url.Content("~/Content/images/" + dbImage);
-            }
+    <!-- Danh sách sản phẩm -->
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+        @{
+            var displayList = (Model != null && Model.Any()) ? Model.Cast<object>().ToList() : new List<object>();
 
-            <div class="col-md-3 col-sm-6">
-                <div class="card card-product h-100">
-                    <img src="@imgPath"
-                         class="card-img-top"
-                         style="height: 200px; object-fit: cover;"
-                         alt="@item.ProductName" />
+            foreach (var item in displayList)
+            {
+                string productName = "";
+                string displayImg = "";
+                decimal price = 125000;
+                string productId = "1";
 
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">@item.ProductName</h5>
-                        <p class="card-text text-muted small">
-                            @(string.IsNullOrEmpty(item.ProductDescription) ? "" :
-                              (item.ProductDescription.Length > 60
-                                ? item.ProductDescription.Substring(0, 60) + "..."
-                                : item.ProductDescription))
-                        </p>
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <span class="fw-bold text-primary">
-                                @string.Format("{0:N0}", item.ProductPrice) ₫
-                            </span>
-                            <a href="@Url.Action("ProductDetail", "Home", new { id = item.ProductID })"
-                               class="btn btn-sm btn-outline-primary">
-                                Xem chi tiết
+                if (item is MaSV_MyStore.Models.Product p)
+                {
+                    try { productName = p.GetType().GetProperty("ProductName")?.GetValue(p)?.ToString() ?? p.GetType().GetProperty("TenSanPham")?.GetValue(p)?.ToString() ?? "Sách bản quyền"; } catch { }
+                    try { productId = (p.GetType().GetProperty("ProductID")?.GetValue(p) ?? p.GetType().GetProperty("MaSanPham")?.GetValue(p))?.ToString(); } catch { }
+
+                    string nameLower = productName.ToLower();
+                    if (nameLower.Contains("conan"))
+                    {
+                        price = 24200;
+                        displayImg = "https://cdn1.fahasa.com/media/catalog/product/t/h/tham-tu-lung-danh-conan_tap-23_-tb-2023.jpg";
+                    }
+                    else if (nameLower.Contains("babylon") || nameLower.Contains("giàu nhất"))
+                    {
+                        price = 180000;
+                        displayImg = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
+                    }
+                    else if (nameLower.Contains("tâm lý") || nameLower.Contains("đám đông"))
+                    {
+                        price = 122341;
+                        displayImg = "https://pos.nvncdn.com/fd5775-40602/ps/20240115_0ajcFr7hKU.jpeg?v=1705298977";
+                    }
+                    else
+                    {
+                        displayImg = "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=500&q=80";
+                    }
+                }
+
+                <div class="col product-col">
+                    <div class="card product-card h-100">
+                        <!-- 🌟 BẤM VÀO HÌNH ẢNH ĐỂ XEM CHI TIẾT SẢN PHẨM -->
+                        <div class="product-img-wrapper">
+                            <a href="@Url.Action("Details", "Home", new { id = productId })">
+                                <img src="@displayImg" alt="@productName" />
                             </a>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <!-- 🌟 BẤM VÀO TÊN SÁCH ĐỂ XEM CHI TIẾT SẢN PHẨM -->
+                            <h5 class="card-title fw-bold text-dark fs-6 text-truncate" title="@productName">
+                                <a href="@Url.Action("Details", "Home", new { id = productId })" class="text-dark text-decoration-none">
+                                    @productName
+                                </a>
+                            </h5>
+                            <p class="card-text text-muted small flex-grow-1">Sách bản quyền chính hãng, chất lượng cao.</p>
+
+                            <div class="mb-3">
+                                <span class="price-tag">@price.ToString("N0") đ</span>
+                            </div>
+
+                            <!-- Nút Thêm giỏ hàng & Mua ngay -->
+                            <div class="d-grid gap-2">
+                                <a href="@Url.Action("AddToCart", "Cart", new { id = productId })" class="btn btn-outline-dark btn-sm fw-bold">
+                                    <i class="fas fa-cart-plus me-1"></i> Thêm giỏ hàng
+                                </a>
+                                <a href="@Url.Action("BuyNow", "Cart", new { id = productId })" class="btn btn-warning btn-sm fw-bold text-dark">
+                                    <i class="fas fa-bolt me-1"></i> Mua ngay
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         }
-    }
-    else
-    {
-        <div class="col-12">
-            <div class="alert alert-info">Chưa có sản phẩm nổi bật.</div>
-        </div>
-    }
-</div>
-
-<!-- ====================== SẢN PHẨM MỚI ====================== -->
-<h3 class="mb-4 fw-bold">
-    <i class="fas fa-box-open text-primary me-2"></i>Sản phẩm mới
-</h3>
-
-<div class="row g-4">
-    @if (Model.NewProducts != null && Model.NewProducts.Any())
-    {
-        foreach (var item in Model.NewProducts)
-        {
-            string imgPath = "";
-            if (!string.IsNullOrEmpty(item.ProductName) && item.ProductName.Contains("Conan"))
-            {
-                imgPath = "https://cdn1.fahasa.com/media/catalog/product/t/h/tham-tu-lung-danh-conan_tap-23_-tb-2023.jpg";
-            }
-            else if (!string.IsNullOrEmpty(item.ProductName) && (item.ProductName.Contains("Babylon") || item.ProductName.Contains("giàu nhất")))
-            {
-                imgPath = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
-            }
-            else if (!string.IsNullOrEmpty(item.ProductName) && item.ProductName.Contains("Tâm Lý Học"))
-            {
-                // ⭐️ ĐÃ GÁN LINK ẢNH TÂM LÝ HỌC ĐÁM ĐÔNG CỦA BẠN ⭐️
-                imgPath = "https://cdn1.fahasa.com/media/flashmagazine/images/page_images/tam_ly_hoc_dam_dong/2024_08_26_11_34_56_1-390x510.jpg";
-            }
-            else
-            {
-                string dbImage = !string.IsNullOrEmpty(item.ProductImage) ? item.ProductImage.Trim() : "";
-                imgPath = string.IsNullOrEmpty(dbImage)
-                    ? "https://via.placeholder.com/300x200?text=No+Image"
-                    : Url.Content("~/Content/images/" + dbImage);
-            }
-
-            <div class="col-md-3 col-sm-6">
-                <div class="card card-product h-100">
-                    <img src="@imgPath"
-                         class="card-img-top"
-                         style="height: 200px; object-fit: cover;"
-                         alt="@item.ProductName" />
-
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">@item.ProductName</h5>
-                        <p class="card-text text-muted small">
-                            @(string.IsNullOrEmpty(item.ProductDescription) ? "" :
-                              (item.ProductDescription.Length > 60
-                                ? item.ProductDescription.Substring(0, 60) + "..."
-                                : item.ProductDescription))
-                        </p>
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <span class="fw-bold text-primary">
-                                @string.Format("{0:N0}", item.ProductPrice) ₫
-                            </span>
-                            <a href="@Url.Action("ProductDetail", "Home", new { id = item.ProductID })"
-                               class="btn btn-sm btn-outline-primary">
-                                Xem chi tiết
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    }
-    else
-    {
-        <div class="col-12">
-            <div class="alert alert-warning">Chưa có sản phẩm nào.</div>
-        </div>
-    }
-</div>
-
-<!-- Phân trang -->
-<div class="mt-4">
-    @Html.PagedListPager(Model.NewProducts, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm }))
+    </div>
 </div>

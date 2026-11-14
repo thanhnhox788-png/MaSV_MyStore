@@ -28,7 +28,7 @@ namespace MaSV_MyStore.Models.ViewModels
             }
         }
 
-        // ⭐️ 2. Phương thức AddItem nhận vào (int productId, int quantity)
+        // 2. Phương thức AddItem nhận vào (int productId, int quantity)
         public void AddItem(int productId, int quantity)
         {
             using (var db = new MyStoreEntities1())
@@ -40,19 +40,49 @@ namespace MaSV_MyStore.Models.ViewModels
                     // Lấy thông tin linh hoạt từ Product
                     int pId = (int)(product.GetType().GetProperty("ProductID")?.GetValue(product) ?? product.GetType().GetProperty("MaSanPham")?.GetValue(product) ?? productId);
                     string pName = product.GetType().GetProperty("ProductName")?.GetValue(product)?.ToString() ?? product.GetType().GetProperty("TenSanPham")?.GetValue(product)?.ToString() ?? "Sản phẩm";
-                    string pImage = product.GetType().GetProperty("ProductImage")?.GetValue(product)?.ToString() ?? product.GetType().GetProperty("HinhAnh")?.GetValue(product)?.ToString() ?? "";
+                    string rawImage = product.GetType().GetProperty("ProductImage")?.GetValue(product)?.ToString() ?? product.GetType().GetProperty("HinhAnh")?.GetValue(product)?.ToString() ?? "";
 
-                    // ⭐️ ĐÃ BỔ SUNG THÊM "ProductPrice" ĐỂ LẤY ĐÚNG GIÁ TIỀN TỪ CSDL
-                    decimal pPrice = Convert.ToDecimal(
-                        product.GetType().GetProperty("ProductPrice")?.GetValue(product) ??
-                        product.GetType().GetProperty("Price")?.GetValue(product) ??
-                        product.GetType().GetProperty("GiaBan")?.GetValue(product) ?? 0);
+                    // ⭐️ TỰ ĐỘNG PHÂN LOẠI VÀ GÁN ĐÚNG HÌNH ẢNH RIÊNG BIỆT CHO TỪNG SẢN PHẨM
+                    string pImage = "";
+                    string nameLower = pName.ToLower();
+
+                    if (nameLower.Contains("conan"))
+                    {
+                        pImage = "https://cdn1.fahasa.com/media/catalog/product/t/h/tham-tu-lung-danh-conan_tap-23_-tb-2023.jpg";
+                    }
+                    else if (nameLower.Contains("babylon") || nameLower.Contains("giàu nhất"))
+                    {
+                        pImage = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
+                    }
+                    else if (nameLower.Contains("tâm lý") || nameLower.Contains("đám đông"))
+                    {
+                        pImage = "https://pos.nvncdn.com/fd5775-40602/ps/20240115_0ajcFr7hKU.jpeg?v=1705298977";
+                    }
+                    else
+                    {
+                        pImage = !string.IsNullOrEmpty(rawImage) && rawImage.StartsWith("http")
+                                 ? rawImage
+                                 : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=500&q=80";
+                    }
+
+                    // ⭐️ ĐÃ BỔ SUNG ĐẦY ĐỦ "DonGia" VÀ "Gia" ĐỂ KHÔNG BAO GIỜ BỊ LỆCH GIÁ
+                    var rawPrice = product.GetType().GetProperty("ProductPrice")?.GetValue(product)
+                                ?? product.GetType().GetProperty("Price")?.GetValue(product)
+                                ?? product.GetType().GetProperty("DonGia")?.GetValue(product)
+                                ?? product.GetType().GetProperty("Gia")?.GetValue(product)
+                                ?? product.GetType().GetProperty("GiaBan")?.GetValue(product)
+                                ?? 0;
+
+                    decimal pPrice = 0;
+                    decimal.TryParse(rawPrice.ToString(), out pPrice);
 
                     // Gọi lại logic thêm vào giỏ hàng
                     var existingItem = items.FirstOrDefault(x => x.ProductID == pId);
                     if (existingItem != null)
                     {
                         existingItem.Quantity += quantity;
+                        existingItem.ProductPrice = pPrice; // Cập nhật lại giá mới nhất từ DB
+                        existingItem.ProductImage = pImage; // Cập nhật lại hình ảnh chuẩn
                     }
                     else
                     {

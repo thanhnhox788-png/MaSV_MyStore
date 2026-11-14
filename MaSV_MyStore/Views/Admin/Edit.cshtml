@@ -1,0 +1,74 @@
+﻿@model MaSV_MyStore.Models.Product
+
+@{
+    ViewBag.Title = "Chỉnh sửa sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var productId = Model.GetType().GetProperty("ProductID")?.GetValue(Model) ?? Model.GetType().GetProperty("MaSanPham")?.GetValue(Model);
+    var productName = Model.GetType().GetProperty("ProductName")?.GetValue(Model) ?? Model.GetType().GetProperty("TenSanPham")?.GetValue(Model);
+    var productImg = Model.GetType().GetProperty("ProductImage")?.GetValue(Model) ?? Model.GetType().GetProperty("HinhAnh")?.GetValue(Model) ?? "";
+
+    decimal currentPrice = 0;
+    var rawPrice = Model.GetType().GetProperty("Price")?.GetValue(Model)
+                ?? Model.GetType().GetProperty("DonGia")?.GetValue(Model)
+                ?? Model.GetType().GetProperty("Gia")?.GetValue(Model)
+                ?? Model.GetType().GetProperty("GiaBan")?.GetValue(Model);
+    if (rawPrice != null)
+    {
+        decimal.TryParse(rawPrice.ToString(), out currentPrice);
+    }
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0 fw-bold"><i class="fas fa-edit me-2"></i>Chỉnh sửa giá & thông tin sản phẩm</h4>
+                </div>
+                <div class="card-body p-4">
+                    @using (Html.BeginForm("Edit", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <!-- Truyền ẩn các biến khóa chính và hình ảnh cũ để không bị mất dữ liệu -->
+                        <input type="hidden" name="ProductID" value="@productId" />
+                        <input type="hidden" name="MaSanPham" value="@productId" />
+                        <input type="hidden" name="ProductImage" value="@productImg" />
+                        <input type="hidden" name="HinhAnh" value="@productImg" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mã sản phẩm</label>
+                            <input type="text" class="form-control bg-light" value="#@productId" disabled />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên sản phẩm</label>
+                            <input type="text" name="ProductName" class="form-control" value="@productName" required />
+                            <!-- Đề phòng trường hợp CSDL dùng tên tiếng Việt -->
+                            <input type="hidden" name="TenSanPham" value="@productName" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-danger">Đơn giá mới (VNĐ)</label>
+                            <!-- Đồng thời gửi giá dưới nhiều tên thuộc tính để bắt đúng cột trong CSDL -->
+                            <input type="number" name="Price" class="form-control fw-bold text-danger fs-5" value="@currentPrice" step="1000" min="0" required />
+                            <input type="hidden" name="DonGia" value="@currentPrice" />
+                            <input type="hidden" name="Gia" value="@currentPrice" />
+                            <div class="form-text">Nhập mệnh giá mới, giá này sẽ cập nhật trực tiếp vào cơ sở dữ liệu và hiển thị ngay trên web chính.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="@Url.Action("Products", "Admin")" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-save me-1"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

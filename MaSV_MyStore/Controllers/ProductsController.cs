@@ -1,69 +1,61 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
-using MaSV_MyStore.Models; // Thay MaSV_MyStore bằng namespace thực tế của bạn
+using MaSV_MyStore.Models;
 
-namespace MaSV_MyStore.Controllers
+namespace MaSV_MyStore.Areas.Admin.Controllers
 {
-    public class ProductController : Controller
+    public class ProductsController : Controller
     {
         private MyStoreEntities1 db = new MyStoreEntities1();
 
-        // 1. GET: Product/Index - Hiển thị danh sách sản phẩm (có hỗ trợ tìm kiếm)
-        public ActionResult Index(string searchString)
+        // GET: Admin/Products
+        public ActionResult Index()
         {
-            var products = db.Products.AsQueryable();
-
-            // Nếu người dùng nhập từ khóa tìm kiếm
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                // Lọc linh hoạt theo tên sản phẩm (hỗ trợ cả ProductName và TenSanPham)
-                products = products.Where(p =>
-                    (p.GetType().GetProperty("ProductName") != null && p.GetType().GetProperty("ProductName").GetValue(p).ToString().Contains(searchString)) ||
-                    (p.GetType().GetProperty("TenSanPham") != null && p.GetType().GetProperty("TenSanPham").GetValue(p).ToString().Contains(searchString))
-                );
-            }
-
-            return View(products.ToList());
+            var products = db.Products.OrderByDescending(p => p.ProductID).ToList();
+            return View(products);
         }
 
-        // 2. GET: Product/Details/5 - Xem chi tiết sản phẩm
-        public ActionResult Details(int? id)
+        // GET: Admin/Products/Edit/5
+        public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction("Index");
             }
 
-            // Tìm sản phẩm theo ID (hỗ trợ cả ProductID và MaSanPham nếu cần)
             var product = db.Products.Find(id);
             if (product == null)
             {
-                return HttpNotFound("Không tìm thấy sản phẩm này.");
+                return HttpNotFound();
             }
 
             return View(product);
         }
 
-        // 3. (Tùy chọn) GET: Product/ListByCategory/5 - Lọc sản phẩm theo danh mục
-        public ActionResult ListByCategory(int? categoryId)
+        // POST: Admin/Products/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(Product model)
         {
-            if (categoryId == null)
+            if (ModelState.IsValid)
             {
-                return RedirectToAction("Index");
+                var product = db.Products.Find(model.ProductID);
+                if (product != null)
+                {
+                    product.ProductName = model.ProductName;
+                    product.ProductDescription = model.ProductDescription;
+                    product.ProductPrice = model.ProductPrice;
+                    product.ProductImage = model.ProductImage;
+                    product.CategoryID = model.CategoryID;
+
+                    db.SaveChanges();
+
+                    TempData["Success"] = "Cập nhật sản phẩm thành công!";
+                    return RedirectToAction("Index");
+                }
             }
 
-            var products = db.Products.ToList().Where(p => {
-                var catProp = p.GetType().GetProperty("CategoryID") ?? p.GetType().GetProperty("MaDanhMuc");
-                if (catProp != null)
-                {
-                    int val = Convert.ToInt32(catProp.GetValue(p));
-                    return val == categoryId.Value;
-                }
-                return false;
-            }).ToList();
-
-            return View("Index", products);
+            return View(model);
         }
 
         protected override void Dispose(bool disposing)

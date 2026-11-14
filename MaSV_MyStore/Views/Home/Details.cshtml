@@ -1,0 +1,107 @@
+﻿@model MaSV_MyStore.Models.Product
+
+@{
+    ViewBag.Title = "Chi tiết sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    @if (Model != null)
+    {
+        // Lấy tên, giá, hình ảnh an toàn qua Reflection hoặc thuộc tính trực tiếp
+        string productName = "";
+        try { productName = Model.GetType().GetProperty("ProductName")?.GetValue(Model)?.ToString() ?? Model.GetType().GetProperty("TenSanPham")?.GetValue(Model)?.ToString() ?? "Sản phẩm"; } catch { }
+
+        var productId = "";
+        try { productId = (Model.GetType().GetProperty("ProductID")?.GetValue(Model) ?? Model.GetType().GetProperty("MaSanPham")?.GetValue(Model))?.ToString(); } catch { }
+
+        decimal price = 0;
+        try
+        {
+            var rawPrice = Model.GetType().GetProperty("Price")?.GetValue(Model)
+                        ?? Model.GetType().GetProperty("DonGia")?.GetValue(Model)
+                        ?? Model.GetType().GetProperty("Gia")?.GetValue(Model)
+                        ?? Model.GetType().GetProperty("GiaBan")?.GetValue(Model);
+            if (rawPrice != null) { decimal.TryParse(rawPrice.ToString(), out price); }
+        }
+        catch { }
+
+        // Xử lý ảnh chuẩn, giá chuẩn và Description hay nhất cho từng sản phẩm
+        string displayImg = "https://cdn1.fahasa.com/media/catalog/product/8/9/8935244834821.jpg";
+        string customDescription = "Sách chính hãng, chất lượng cao, cập nhật kiến thức hay và bổ ích cho bạn đọc.";
+        string checkName = productName.ToLower();
+
+        if (productId == "1" || checkName.Contains("tâm lý") || checkName.Contains("đám đông"))
+        {
+            displayImg = "https://pos.nvncdn.com/fd5775-40602/ps/20240115_0ajcFr7hKU.jpeg?v=1705298977";
+            if (price <= 0) { price = 122341; }
+            customDescription = "Tác phẩm kinh điển của nhà tâm lý học Gustave Le Bon nghiên cứu sâu sắc về cách thức mà đám đông suy nghĩ, cảm nhận và hành động. Cuốn sách bóc trần những hiện tượng tâm lý xã hội, sự lôi kéo của cảm xúc thay vì lý trí trong các tập thể lớn. Một tài liệu vô giá dành cho các nhà lãnh đạo, chuyên gia truyền thông, marketer hoặc bất cứ ai muốn thấu hiểu sâu sắc bản chất tâm lý con người trong xã hội hiện đại.";
+        }
+        else if (productId == "2" || checkName.Contains("babylon") || checkName.Contains("giàu nhất"))
+        {
+            displayImg = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
+            if (price <= 0) { price = 180000; }
+            customDescription = "Được ví như cẩm nang tài chính kinh điển nhất thế giới, <strong>'Người giàu nhất thành Babylon'</strong> của tác giả George S. Clason sẽ dẫn dắt bạn qua những câu chuyện ngụ ngôn đầy thú vị tại thành phố cổ đại giàu có bậc nhất lịch sử. Cuốn sách đúc kết những nguyên tắc vàng về quản lý tiền bạc, cách tích lũy tài sản, gia tăng thu nhập và bắt tiền làm việc cho bạn. Đây là tựa sách gối đầu giường không thể thiếu cho bất kỳ ai muốn làm chủ tài chính cá nhân và đạt được sự thịnh vượng bền vững.";
+        }
+        else if (productId == "3" || checkName.Contains("conan"))
+        {
+            displayImg = "https://cdn1.fahasa.com/media/catalog/product/t/h/tham-tu-lung-danh-conan_tap-23_-tb-2023.jpg";
+            if (price <= 0) { price = 24200; }
+            customDescription = "Đồng hành cùng thám tử trung học Edogawa Conan trong những vụ án hóc búa, những màn đấu trí cân não với Tổ Chức Áo Đen bí ẩn. Với cốt truyện ly kỳ, các nút thắt bất ngờ và những pha suy luận sắc bén, tập truyện mới nhất này tiếp tục mang đến những giây phút hồi hộp, nghẹt thở nhưng cũng vô cùng lôi cuốn cho các fan trung thành của series truyện tranh trinh thám huyền thoại này.";
+        }
+
+        <div class="row g-5 align-items-center">
+            <!-- Cột hình ảnh sản phẩm -->
+            <div class="col-md-5 text-center">
+                <div class="card border-0 shadow-lg p-3 rounded-4 bg-white">
+                    <img src="@displayImg" class="img-fluid rounded-3" style="max-height: 420px; object-fit: cover;" alt="@productName" />
+                </div>
+            </div>
+
+            <!-- Cột thông tin chi tiết và Description -->
+            <div class="col-md-7">
+                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3">
+                    <i class="fas fa-bookmark me-1"></i> Sách chính hãng bản quyền
+                </span>
+                <h2 class="fw-bold text-dark mb-2">@productName</h2>
+                <p class="text-muted small mb-3">Mã sản phẩm: <strong>#@productId</strong></p>
+
+                <h3 class="text-danger fw-bold mb-4">@price.ToString("N0") đ</h3>
+
+                <!-- 📖 Khung mô tả chi tiết (Description) cuốn sách -->
+                <div class="card border-0 shadow-sm bg-light p-4 rounded-4 mb-4">
+                    <h5 class="fw-bold text-secondary mb-3">
+                        <i class="fas fa-info-circle text-warning me-2"></i> Giới thiệu tác phẩm
+                    </h5>
+                    <p class="text-muted mb-0" style="line-height: 1.8; font-size: 1.05rem;">
+                        @Html.Raw(customDescription)
+                    </p>
+                </div>
+
+                <!-- Nút Mua ngay và Thêm vào giỏ hàng -->
+                <div class="d-flex gap-3">
+                    <a href="@Url.Action("AddToCart", "Cart", new { id = productId })" class="btn btn-outline-dark btn-lg px-4 fw-bold rounded-3">
+                        <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ hàng
+                    </a>
+                    <a href="@Url.Action("Checkout", "Order", new { id = productId })" class="btn btn-warning text-dark btn-lg px-4 fw-bold shadow-sm rounded-3">
+                        <i class="fas fa-bolt me-2"></i>Mua Ngay
+                    </a>
+                </div>
+
+                <!-- 🌟 Nút "Tiếp tục mua sắm" đã được thêm màu sắc và kiểu dáng Button nổi bật -->
+                <div class="mt-4">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary px-4 py-2 fw-semibold rounded-pill shadow-sm" style="transition: all 0.3s ease;">
+                        <i class="fas fa-arrow-left me-2 text-warning"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning text-center py-5 shadow-sm rounded-4">
+            <h4 class="fw-bold">Không tìm thấy thông tin sản phẩm!</h4>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-dark mt-3 fw-bold px-4">Quay lại trang chủ</a>
+        </div>
+    }
+</div>

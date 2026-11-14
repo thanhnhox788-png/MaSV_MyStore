@@ -1,0 +1,118 @@
+﻿@model MaSV_MyStore.Models.Order
+
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    // Xử lý lấy OrderID an toàn tuyệt đối
+    var oModel = Model;
+    string orderId = "";
+    try { orderId = (oModel.GetType().GetProperty("OrderID")?.GetValue(oModel) ?? oModel.GetType().GetProperty("MaDonHang")?.GetValue(oModel))?.ToString(); } catch { }
+
+    // Xử lý lấy CustomerID an toàn tuyệt đối
+    string customerId = "";
+    try { customerId = (oModel.GetType().GetProperty("CustomerID")?.GetValue(oModel) ?? oModel.GetType().GetProperty("MaKhachHang")?.GetValue(oModel))?.ToString(); } catch { }
+
+    // Xử lý định dạng ngày giờ đặt hàng chuẩn xác
+    string orderDateStr = "N/A";
+    try
+    {
+        var rawDate = oModel.GetType().GetProperty("OrderDate")?.GetValue(oModel) ?? oModel.GetType().GetProperty("NgayDat")?.GetValue(oModel);
+        if (rawDate != null)
+        {
+            if (rawDate is DateTime dt)
+            {
+                orderDateStr = dt.ToString("dd/MM/yyyy HH:mm");
+            }
+            else
+            {
+                DateTime parsedDt;
+                if (DateTime.TryParse(rawDate.ToString(), out parsedDt))
+                {
+                    orderDateStr = parsedDt.ToString("dd/MM/yyyy HH:mm");
+                }
+                else
+                {
+                    orderDateStr = rawDate.ToString();
+                }
+            }
+        }
+    }
+    catch { }
+}
+
+<div class="container my-4">
+    <div class="card shadow-sm p-4 border-0">
+        <h2 class="fw-bold mb-4 text-primary">
+            <i class="fas fa-file-invoice me-2"></i>Chi tiết đơn hàng #@orderId
+        </h2>
+
+        <!-- Thông tin chung đơn hàng -->
+        <div class="row mb-4 bg-light p-3 rounded">
+            <div class="col-md-6">
+                <p class="mb-2"><strong>Mã khách hàng:</strong> @(string.IsNullOrEmpty(customerId) ? "N/A" : customerId)</p>
+                <p class="mb-0"><strong>Ngày giờ đặt:</strong> <span class="text-dark fw-bold">@orderDateStr</span></p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p class="mb-0"><strong>Trạng thái:</strong> <span class="badge bg-warning text-dark px-3 py-2">Đang xử lý</span></p>
+            </div>
+        </div>
+
+        <h4 class="fw-bold mb-3"><i class="fas fa-boxes me-2"></i>Danh sách sản phẩm khách đặt</h4>
+
+        <!-- Bảng danh sách sản phẩm trong đơn hàng -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        decimal totalOrderAmount = 0;
+                        // Lấy danh sách chi tiết đơn hàng từ ViewBag
+                        var details = ViewBag.OrderDetails as IEnumerable<object>;
+                        if (details != null)
+                        {
+                            foreach (var item in details)
+                            {
+                                string pName = item.GetType().GetProperty("ProductName")?.GetValue(item)?.ToString() ?? "Sản phẩm";
+                                string pImg = item.GetType().GetProperty("ProductImage")?.GetValue(item)?.ToString() ?? "";
+                                decimal price = Convert.ToDecimal(item.GetType().GetProperty("Price")?.GetValue(item) ?? item.GetType().GetProperty("DonGia")?.GetValue(item) ?? 0);
+                                int qty = Convert.ToInt32(item.GetType().GetProperty("Quantity")?.GetValue(item) ?? item.GetType().GetProperty("SoLuong")?.GetValue(item) ?? 0);
+                                decimal subTotal = price * qty;
+                                totalOrderAmount += subTotal;
+
+                                <tr>
+                                    <td style="width: 90px;" class="text-center">
+                                        <img src="@pImg" alt="@pName" style="width: 60px; height: 60px; object-fit: cover;" class="rounded border shadow-sm" />
+                                    </td>
+                                    <td class="fw-bold text-start">@pName</td>
+                                    <td class="text-danger fw-bold">@price.ToString("N0") đ</td>
+                                    <td class="text-center"><span class="badge bg-secondary px-2 py-1">@qty</span></td>
+                                    <td class="text-success fw-bold">@subTotal.ToString("N0") đ</td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tổng cộng đơn hàng -->
+        <div class="d-flex justify-content-end mt-3">
+            <h4 class="fw-bold text-danger">Tổng giá trị đơn hàng: @totalOrderAmount.ToString("N0") đ</h4>
+        </div>
+
+        <div class="mt-4">
+            <a href="@Url.Action("Orders", "Admin")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách đơn hàng
+            </a>
+        </div>
+    </div>
+</div>
