@@ -9,7 +9,7 @@ namespace MaSV_MyStore.Controllers
     {
         private MyStoreEntities1 db = new MyStoreEntities1();
 
-        // GET: Admin/Index (Bảng điều khiển tổng quan)
+        // GET: Admin/Index (Bảng điều khiển tổng quan - Cập nhật thời gian thực từ CSDL)
         public ActionResult Index()
         {
             try
@@ -21,7 +21,11 @@ namespace MaSV_MyStore.Controllers
                 decimal totalRevenue = 0;
                 try
                 {
-                    totalRevenue = db.OrderDetails.Sum(od => (decimal?)(od.Quantity * od.UnitPrice) ?? 0);
+                    // ⭐️ Tự động cộng dồn doanh thu thực tế từ tất cả chi tiết đơn hàng trong CSDL theo thời gian thực
+                    if (db.OrderDetails.Any())
+                    {
+                        totalRevenue = db.OrderDetails.Sum(od => (decimal?)(od.Quantity * od.UnitPrice) ?? 0);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -30,13 +34,14 @@ namespace MaSV_MyStore.Controllers
                 }
                 ViewBag.TotalRevenue = totalRevenue;
 
+                // Lấy danh sách các đơn hàng mới phát sinh gần nhất (sắp xếp mới nhất lên đầu)
                 var recentOrders = db.Orders.OrderByDescending(o => o.OrderID).Take(5).ToList();
                 return View(recentOrders);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("Lỗi Dashboard: " + ex.Message);
-                return View();
+                return View(Enumerable.Empty<Order>());
             }
         }
 
@@ -111,12 +116,12 @@ namespace MaSV_MyStore.Controllers
             return View(model);
         }
 
-        // Quản lý đơn hàng
+        // Quản lý đơn hàng (Sắp xếp đơn hàng mới nhất lên đầu)
         public ActionResult Orders()
         {
             try
             {
-                var orders = db.Orders.ToList();
+                var orders = db.Orders.OrderByDescending(o => o.OrderID).ToList();
                 return View(orders);
             }
             catch (Exception ex)
@@ -145,13 +150,11 @@ namespace MaSV_MyStore.Controllers
                 var orderDetails = db.OrderDetails.Where(x => x.OrderID == id).ToList();
 
                 var displayDetails = orderDetails.Select(od => {
-                    // Lấy sản phẩm từ CSDL dựa vào ProductID
                     var product = db.Products.FirstOrDefault(p => p.ProductID == od.ProductID);
 
                     string pName = product != null ? product.ProductName : "Sản phẩm";
                     string rawImg = product != null ? product.ProductImage : "";
 
-                    // ⭐️ PHÂN LOẠI VÀ GÁN ĐÚNG HÌNH ẢNH CHUẨN CHO TỪNG SẢN PHẨM
                     string pImage = "";
                     string nameLower = pName.ToLower();
 
@@ -170,8 +173,8 @@ namespace MaSV_MyStore.Controllers
                     else
                     {
                         pImage = !string.IsNullOrEmpty(rawImg) && rawImg.StartsWith("http")
-                                   ? rawImg
-                                   : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=500&q=80";
+                                    ? rawImg
+                                    : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=500&q=80";
                     }
 
                     return new
@@ -202,7 +205,7 @@ namespace MaSV_MyStore.Controllers
             return View(customers);
         }
 
-        // ⭐️ BỔ SUNG: Xem chi tiết thông tin khách hàng
+        // Xem chi tiết thông tin khách hàng
         public ActionResult CustomerDetails(int? id)
         {
             if (id == null)

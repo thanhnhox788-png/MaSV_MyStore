@@ -20,6 +20,7 @@ namespace MaSV_MyStore.Models
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+        public Nullable<decimal> Balance { get; set; }
     
         public virtual User1 User { get; set; }
     }

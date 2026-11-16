@@ -1,0 +1,108 @@
+﻿@model MaSV_MyStore.Models.Customer
+
+@{
+    ViewBag.Title = "Thông tin tài khoản";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4 p-4 p-md-5" style="background-color: #ffffff;">
+                <!-- Tiêu đề trang hồ sơ -->
+                <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning me-3 shadow-sm">
+                        <i class="fas fa-user-circle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold text-dark mb-1">Thông tin tài khoản</h3>
+                        <p class="text-muted small mb-0">Chi tiết thông tin cá nhân và số dư ví MyStore của bạn</p>
+                    </div>
+                </div>
+
+                @if (Model != null)
+                {
+                    <div class="row g-4">
+                        <!-- Họ và tên -->
+                        <div class="col-md-6">
+                            <label class="form-label small text-uppercase text-muted fw-bold">Họ và tên</label>
+                            <div class="p-3 bg-light rounded-3 fw-semibold text-dark border-0">
+                                <i class="fas fa-user text-secondary me-2"></i> @(Model.CustomerName ?? "Chưa cập nhật")
+                            </div>
+                        </div>
+
+                        <!-- Tên đăng nhập -->
+                        <div class="col-md-6">
+                            <label class="form-label small text-uppercase text-muted fw-bold">Tên đăng nhập</label>
+                            <div class="p-3 bg-light rounded-3 fw-semibold text-dark border-0">
+                                <i class="fas fa-at text-secondary me-2"></i> @(Model.Username ?? "Chưa cập nhật")
+                            </div>
+                        </div>
+
+                        <!-- Số điện thoại -->
+                        <div class="col-md-6">
+                            <label class="form-label small text-uppercase text-muted fw-bold">Số điện thoại</label>
+                            <div class="p-3 bg-light rounded-3 fw-semibold text-dark border-0">
+                                <i class="fas fa-phone text-secondary me-2"></i> @(Model.Phone ?? "Chưa cập nhật")
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label class="form-label small text-uppercase text-muted fw-bold">Email</label>
+                            <div class="p-3 bg-light rounded-3 fw-semibold text-dark border-0">
+                                <i class="fas fa-envelope text-secondary me-2"></i> @(Model.Email ?? "Chưa cập nhật")
+                            </div>
+                        </div>
+
+                        <!-- Số dư ví MyStore (Xử lý an toàn tuyệt đối không lỗi biên dịch) -->
+                        <div class="col-md-6">
+                            <label class="form-label small text-uppercase text-muted fw-bold">Số dư ví MyStore</label>
+                            <div class="p-3 bg-success bg-opacity-10 rounded-3 fw-bold text-success border border-success border-opacity-25">
+                                <i class="fas fa-wallet me-2"></i>
+                                @{
+                                    decimal balanceValue = 0;
+                                    try
+                                    {
+                                        var prop = Model.GetType().GetProperty("Balance");
+                                        if (prop != null)
+                                        {
+                                            balanceValue = Convert.ToDecimal(prop.GetValue(Model, null) ?? 0);
+                                        }
+                                    }
+                                    catch { }
+                                }
+                                @string.Format("{0:N0} đ", balanceValue)
+                            </div>
+                        </div>
+
+                        <!-- Địa chỉ giao hàng -->
+                        <div class="col-12">
+                            <label class="form-label small text-uppercase text-muted fw-bold">Địa chỉ giao hàng</label>
+                            <div class="p-3 bg-light rounded-3 fw-semibold text-dark border-0">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i> @(Model.Address ?? Model.CustomerAddress ?? "Chưa cập nhật")
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nút điều hướng phía dưới -->
+                    <div class="mt-5 pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-semibold">
+                            <i class="fas fa-arrow-left me-2"></i>Trang chủ
+                        </a>
+                        <a href="@Url.Action("Index", "Cart")" class="btn btn-warning text-dark px-4 py-2 rounded-3 fw-bold shadow-sm">
+                            <i class="fas fa-shopping-cart me-2"></i>Giỏ hàng của tôi
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning text-center py-4">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-2 text-warning"></i>
+                        <p class="mb-0 fw-semibold">Không tìm thấy thông tin tài khoản.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

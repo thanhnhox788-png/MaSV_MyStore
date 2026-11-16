@@ -34,13 +34,13 @@
             padding-bottom: 0.75rem;
         }
 
-        /* --- 🌟 HIỆU ỨNG LOGO THƯƠNG HIỆU CAO CẤP --- */
+        /* --- 🌟 HIỆU ỨNG LOGO THƯƠNG HIỆU CAO CẤP MỚI --- */
         .brand-logo-wrapper {
             display: inline-flex;
             align-items: center;
             text-decoration: none !important;
             padding: 4px 8px;
-            border-radius: 12px;
+            border-radius: 14px;
             transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
@@ -48,35 +48,33 @@
                 transform: translateY(-2px);
             }
 
-        /* Biểu tượng quyển sách mở kết hợp vương miện tỏa sáng */
         .brand-icon-box {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             background: linear-gradient(135deg, #1e1e2f 0%, #0f1016 100%);
-            border: 1.5px solid rgba(245, 158, 11, 0.5);
-            border-radius: 12px;
+            border: 1.5px solid rgba(245, 158, 11, 0.6);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.25);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
             transition: all 0.4s ease;
         }
 
         .brand-logo-wrapper:hover .brand-icon-box {
             border-color: #f59e0b;
-            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
-            transform: rotate(-5deg) scale(1.05);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+            transform: rotate(-6deg) scale(1.06);
         }
 
         .brand-icon-box i {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        /* Tên thương hiệu phong cách tối giản, sang trọng */
         .brand-text-group {
             display: flex;
             flex-direction: column;
@@ -85,7 +83,7 @@
 
         .brand-title {
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             letter-spacing: 0.5px;
             background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
             -webkit-background-clip: text;
@@ -93,20 +91,20 @@
         }
 
         .brand-subtitle {
-            font-size: 0.65rem;
-            font-weight: 600;
+            font-size: 0.6rem;
+            font-weight: 700;
             letter-spacing: 2.5px;
             text-transform: uppercase;
             color: #f59e0b;
         }
 
-        /* --- 🎨 MÀU SẮC ĐỒNG BỘ CHO CÁC NÚT BẤM TRÊN NAVBAR --- */
+        /* --- 🎨 MÀU SẮC THỊNH HÀNH & HIỆU ỨNG CHO CÁC NÚT BẤM TRÊN NAVBAR --- */
         .navbar-nav .nav-link {
             font-weight: 500;
             transition: all 0.3s ease;
-            padding: 0.5rem 0.9rem !important;
+            padding: 0.5rem 0.95rem !important;
             border-radius: 8px;
-            margin-right: 4px;
+            margin-right: 6px;
         }
 
         .nav-link-item {
@@ -116,35 +114,52 @@
             .nav-link-item:hover {
                 color: #ffffff !important;
                 background-color: rgba(255, 255, 255, 0.08);
+                transform: translateY(-1px);
             }
 
-        /* Nút Đăng nhập: Xanh dương chuyên nghiệp */
-        .nav-btn-login {
-            background-color: rgba(37, 99, 235, 0.15);
+        /* Trang chủ: Xanh dương chuyên nghiệp */
+        .nav-btn-home {
+            background-color: rgba(37, 99, 235, 0.12);
             color: #60a5fa !important;
-            border: 1px solid rgba(96, 165, 250, 0.3);
+            border: 1px solid rgba(96, 165, 250, 0.25);
+        }
+
+            .nav-btn-home:hover {
+                background-color: #2563eb !important;
+                color: #ffffff !important;
+                box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+                transform: translateY(-2px);
+            }
+
+        /* Đăng nhập: Tông tím sang trọng */
+        .nav-btn-login {
+            background-color: rgba(124, 58, 237, 0.12);
+            color: #a78bfa !important;
+            border: 1px solid rgba(167, 139, 250, 0.25);
         }
 
             .nav-btn-login:hover {
-                background-color: #2563eb !important;
+                background-color: #7c3aed !important;
                 color: #ffffff !important;
-                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+                box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35);
+                transform: translateY(-2px);
             }
 
-        /* Nút Đăng ký: Xanh ngọc thanh lịch */
+        /* Đăng ký: Xanh ngọc tinh tế */
         .nav-btn-register {
-            background-color: rgba(13, 148, 136, 0.15);
+            background-color: rgba(13, 148, 136, 0.12);
             color: #2dd4bf !important;
-            border: 1px solid rgba(45, 212, 191, 0.3);
+            border: 1px solid rgba(45, 212, 191, 0.25);
         }
 
             .nav-btn-register:hover {
                 background-color: #0d9488 !important;
                 color: #ffffff !important;
-                box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+                box-shadow: 0 4px 15px rgba(13, 148, 136, 0.35);
+                transform: translateY(-2px);
             }
 
-        /* Nút Giỏ hàng: Cam hổ phách nổi bật */
+        /* Giỏ hàng: Cam hổ phách nổi bật */
         .nav-btn-cart {
             background-color: rgba(245, 158, 11, 0.15);
             color: #fbbf24 !important;
@@ -154,7 +169,8 @@
             .nav-btn-cart:hover {
                 background-color: #f59e0b !important;
                 color: #1a1d21 !important;
-                box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+                box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+                transform: translateY(-2px);
             }
 
         .body-content {
@@ -177,18 +193,22 @@
                 color: #ffffff;
             }
 
-            .footer-section a:hover {
-                color: #f59e0b !important;
+            .footer-section a {
+                transition: color 0.2s ease;
             }
+
+                .footer-section a:hover {
+                    color: #f59e0b !important;
+                }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark sticky-top">
         <div class="container">
-            <!-- ⭐️ LOGO SANG TRỌNG & ĐẲNG CẤP -->
+            <!-- ⭐️ LOGO SANG TRỌNG & ĐẲNG CẤP MỚI -->
             <a href="@Url.Action("Index", "Home")" class="brand-logo-wrapper">
                 <div class="brand-icon-box">
-                    <i class="fas fa-book-open"></i>
+                    <i class="fas fa-crown"></i>
                 </div>
                 <div class="brand-text-group ms-2">
                     <span class="brand-title">MYSTORE</span>
@@ -196,71 +216,84 @@
                 </div>
             </a>
 
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation">
+            <button type="button" class="navbar-toggler border-0 shadow-none" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <!-- Menu bên trái -->
                 <ul class="navbar-nav flex-grow-1 ms-3">
-                    <li class="nav-item">@Html.ActionLink("Trang chủ", "Index", "Home", new { area = "" }, new { @class = "nav-link nav-link-item" })</li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-btn-home px-3 py-2" href="@Url.Action("Index", "Home", new { area = "" })">
+                            <i class="fas fa-home me-1"></i> Trang chủ
+                        </a>
+                    </li>
                     <li class="nav-item">@Html.ActionLink("Giới thiệu", "About", "Home", new { area = "" }, new { @class = "nav-link nav-link-item" })</li>
                     <li class="nav-item">@Html.ActionLink("Liên hệ", "Contact", "Home", new { area = "" }, new { @class = "nav-link nav-link-item" })</li>
                 </ul>
 
                 <!-- Khu vực bên phải: Đăng nhập, Đăng ký, Giỏ hàng -->
-                <ul class="navbar-nav align-items-center">
+                <ul class="navbar-nav align-items-center gap-1">
                     @if (Session["Account"] != null || Session["Username"] != null || Session["Customer"] != null)
                     {
                         var userName = Session["Username"] ?? Session["Account"] ?? "Khách hàng";
                         var fullName = Session["FullName"] ?? userName;
 
-                        <li class="nav-item dropdown me-2">
+                        <li class="nav-item dropdown me-2 position-relative">
                             <!-- Nút bấm hiển thị tên tài khoản -->
-                            <a class="nav-link dropdown-toggle text-warning fw-bold px-3 py-2 rounded-3" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: rgba(245, 158, 11, 0.1);">
+                            <a class="nav-link dropdown-toggle text-warning fw-bold px-3 py-2 rounded-3 shadow-sm" href="javascript:void(0);" id="userDropdown" style="background-color: rgba(245, 158, 11, 0.12);">
                                 <i class="fas fa-user-circle me-1"></i> Chào, @userName
                             </a>
-                            <!-- Menu thông tin tài khoản và số dư xổ xuống khi bấm vào -->
-                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-3 mt-2 rounded-4" aria-labelledby="userDropdown" style="width: 280px; background-color: #ffffff;">
-                                <li class="text-center pb-3 border-bottom">
-                                    <div class="bg-dark text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-2 shadow-sm" style="width: 50px; height: 50px;">
-                                        <i class="fas fa-user fa-lg"></i>
-                                    </div>
-                                    <h6 class="fw-bold text-dark mb-1">@fullName</h6>
-                                    <span class="badge bg-light text-secondary border">Tài khoản: @userName</span>
+
+                            <!-- Menu thả xuống chứa các mục lựa chọn -->
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2 mt-2 rounded-4" id="userDropdownMenu" style="position: absolute; right: 0; left: auto; width: 260px; background-color: #ffffff; display: none; z-index: 9999;">
+                                <li class="px-3 py-2 border-bottom mb-1">
+                                    <span class="small text-muted d-block">Xin chào,</span>
+                                    <span class="fw-bold text-dark">@fullName</span>
                                 </li>
 
-                                <!-- Hiển thị số dư tài khoản -->
-                                <li class="py-3 border-bottom">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="text-muted small"><i class="fas fa-wallet text-warning me-1"></i> Số dư tài khoản:</span>
-                                        <span class="fw-bold text-success">1,500,000 đ</span>
-                                    </div>
+                                <!-- Mục 1: Số dư tài khoản -->
+                                <li>
+                                    <a class="dropdown-item py-2 px-3 rounded-2 text-dark d-flex justify-content-between align-items-center" href="#">
+                                        <span><i class="fas fa-wallet text-warning me-2"></i>Số dư tài khoản</span>
+                                        <span class="fw-bold text-success small">1,500,000 đ</span>
+                                    </a>
                                 </li>
 
-                                <li><a class="dropdown-item py-2 rounded-2 mt-2 text-dark fw-semibold" href="#"><i class="fas fa-user-edit me-2 text-warning"></i>Thông tin tài khoản</a></li>
-                                <li><a class="dropdown-item py-2 rounded-2 text-dark fw-semibold" href="#"><i class="fas fa-box-open me-2 text-warning"></i>Đơn hàng của tôi</a></li>
+                                <!-- Mục 2: Thông tin tài khoản -->
+                                <li>
+                                    <a class="dropdown-item py-2 px-3 rounded-2 text-dark" href="@Url.Action("AccountProfile", "Account")">
+                                        <i class="fas fa-user-circle text-primary me-2"></i>Thông tin tài khoản
+                                    </a>
+                                </li>
+
                                 <li><hr class="dropdown-divider my-2"></li>
-                                <li><a class="dropdown-item text-danger py-2 rounded-2 fw-bold" href="@Url.Action("Logout", "Account")"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+
+                                <!-- Mục 3: Đăng xuất -->
+                                <li>
+                                    <a class="dropdown-item py-2 px-3 rounded-2 text-danger fw-bold" href="@Url.Action("Logout", "Account")">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     }
                     else
                     {
-                        <li class="nav-item me-2">
-                            <a class="nav-link nav-btn-login px-3 py-2" href="@Url.Action("Login", "Account")">
+                        <li class="nav-item me-1">
+                            <a class="nav-link nav-btn-login px-3 py-2 rounded-3" href="@Url.Action("Login", "Account")">
                                 <i class="fas fa-sign-in-alt me-1"></i> Đăng nhập
                             </a>
                         </li>
-                        <li class="nav-item me-2">
-                            <a class="nav-link nav-btn-register px-3 py-2" href="@Url.Action("Register", "Account")">
+                        <li class="nav-item me-1">
+                            <a class="nav-link nav-btn-register px-3 py-2 rounded-3" href="@Url.Action("Register", "Account")">
                                 <i class="fas fa-user-plus me-1"></i> Đăng ký
                             </a>
                         </li>
                     }
 
                     <li class="nav-item">
-                        <a class="nav-link nav-btn-cart px-3 py-2 fw-bold" href="@Url.Action("Index", "Cart")">
+                        <a class="nav-link nav-btn-cart px-3 py-2 fw-bold rounded-3" href="@Url.Action("Index", "Cart")">
                             <i class="fas fa-shopping-cart me-1"></i> Giỏ hàng
                         </a>
                     </li>
@@ -334,5 +367,31 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+
+    <!-- ⭐️ SCRIPT ĐIỀU KHIỂN DROPDOWN HIỆN/ẨN CHÍNH XÁC 100% -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var dropdownToggle = document.getElementById("userDropdown");
+            var dropdownMenu = document.getElementById("userDropdownMenu");
+
+            if (dropdownToggle && dropdownMenu) {
+                dropdownToggle.addEventListener("click", function (e) {
+                    e.stopPropagation(); // Ngăn sự kiện nổi bọt
+                    if (dropdownMenu.style.display === "block") {
+                        dropdownMenu.style.display = "none";
+                    } else {
+                        dropdownMenu.style.display = "block";
+                    }
+                });
+
+                // Click ra vùng bên ngoài thì ẩn menu đi
+                document.addEventListener("click", function (e) {
+                    if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.style.display = "none";
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

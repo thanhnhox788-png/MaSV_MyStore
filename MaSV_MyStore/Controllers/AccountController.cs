@@ -1,10 +1,8 @@
-﻿using MaSV_MyStore.Models;
-using MaSV_MyStore.Models.ViewModels;
-using System;
+﻿using System;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
+using MaSV_MyStore.Models;
+using MaSV_MyStore.Models.ViewModels; // Thêm namespace chứa RegisterVM
 
 namespace MaSV_MyStore.Controllers
 {
@@ -12,123 +10,112 @@ namespace MaSV_MyStore.Controllers
     {
         private MyStoreEntities1 db = new MyStoreEntities1();
 
-        // ====================== REGISTER ======================
-        [HttpGet]
-        public ActionResult Register()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Register(RegisterVM model)
-        {
-            if (ModelState.IsValid)
-            {
-                var existingUser = db.Users.FirstOrDefault(u => u.Username == model.Username);
-                if (existingUser != null)
-                {
-                    ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại!");
-                    return View(model);
-                }
-
-                var user = new User
-                {
-                    Username = model.Username,
-                    Password = model.Password,
-                    Role = "Customer"
-                };
-                db.Users.Add(user);
-
-                var customer = new Customer
-                {
-                    Username = model.Username,
-                    CustomerName = model.FullName,
-                    Phone = model.Phone,
-                    Email = model.Email,
-                    Address = model.Address,
-                    Password = model.Password
-                };
-                db.Customers.Add(customer);
-
-                try
-                {
-                    db.SaveChanges();
-                    return RedirectToAction("Login");
-                }
-                catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-                {
-                    var errorMessages = ex.EntityValidationErrors
-                        .SelectMany(x => x.ValidationErrors)
-                        .Select(x => x.PropertyName + ": " + x.ErrorMessage);
-
-                    string fullError = string.Join(" | ", errorMessages);
-                    ModelState.AddModelError("", "Lỗi lưu dữ liệu: " + fullError);
-                    return View(model);
-                }
-            }
-
-            return View(model);
-        }
-
-        // ====================== LOGIN ======================
+        // 1. GET: Đăng nhập
         [HttpGet]
         public ActionResult Login()
         {
             return View();
         }
 
+        // 2. POST: Xử lý Đăng nhập
+        [HttpPost]
+        public ActionResult Login(Customer model)
+        {
+            var user = db.Customers.FirstOrDefault(x => x.Username == model.Username && x.Password == model.Password);
+
+            if (user != null)
+            {
+                // Lưu thông tin vào Session
+                Session["Username"] = user.Username;
+                Session["FullName"] = user.CustomerName;
+                Session["Customer"] = user;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không chính xác.");
+            return View(model);
+        }
+
+        // 3. GET: Đăng ký
+        [HttpGet]
+        public ActionResult Register()
+        {
+            return View();
+        }
+
+        // 4. POST: Xử lý Đăng ký (Dùng RegisterVM khớp với giao diện View)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(LoginVM model)
+        public ActionResult Register(RegisterVM model)
         {
             if (ModelState.IsValid)
             {
-                var user = db.Users.FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
-
-                if (user != null)
+                // Kiểm tra xem tên đăng nhập đã tồn tại chưa
+                var existingUser = db.Customers.FirstOrDefault(x => x.Username == model.Username);
+                if (existingUser != null)
                 {
-                    FormsAuthentication.SetAuthCookie(user.Username, false);
-
-                    // ⭐ ĐỒNG BỘ CÁC BIẾN SESSION ĐỂ KHỚP VỚI CARTCONTROLLER ⭐
-                    Session["Username"] = user.Username;
-                    Session["Account"] = user.Username; // Khớp với hàm GetLoggedUser() trong CartController
-                    Session["Role"] = user.Role;
-
-                    var customer = db.Customers.FirstOrDefault(c => c.Username == user.Username);
-                    if (customer != null)
-                    {
-                        Session["FullName"] = customer.CustomerName;
-                    }
-                    else
-                    {
-                        Session["FullName"] = user.Username;
-                    }
-
-                    return RedirectToAction("Index", "Home");
+                    ModelState.AddModelError("Username", "Tên đăng nhập này đã tồn tại.");
+                    return View(model);
                 }
 
-                ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng!");
+                // Chuyển đổi dữ liệu từ RegisterVM sang Customer để lưu vào Database
+                var newCustomer = new Customer
+                {
+                    Username = model.Username,
+                    Password = model.Password,
+                    CustomerName = model.FullName,
+                    Phone = model.CountryCode + model.Phone, // Gộp mã quốc gia và số điện thoại
+                    Email = model.Email,
+                    Address = model.Address
+                };
+
+                // ⭐️ Dùng Reflection gán Balance = 0 (Số dư ví mặc định 0đ khi đăng ký mới)
+                try
+                {
+                    var balanceProp = newCustomer.GetType().GetProperty("Balance");
+                    if (balanceProp != null)
+                    {
+                        balanceProp.SetValue(newCustomer, Convert.ChangeType(0m, balanceProp.PropertyType));
+                    }
+                }
+                catch { }
+
+                db.Customers.Add(newCustomer);
+                db.SaveChanges();
+
+                return RedirectToAction("Login", "Account");
             }
 
             return View(model);
         }
 
-        // ====================== LOGOUT ======================
-        public ActionResult Logout()
+        // 5. Trang thông tin tài khoản
+        [HttpGet]
+        public ActionResult AccountProfile()
         {
-            FormsAuthentication.SignOut();
-            Session.Clear();
-            return RedirectToAction("Index", "Home");
+            string username = Session["Username"]?.ToString();
+
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var customer = db.Customers.FirstOrDefault(x => x.Username == username);
+
+            if (customer == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(customer);
         }
 
-        protected override void Dispose(bool disposing)
+        // 6. Đăng xuất
+        public ActionResult Logout()
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            Session.Clear();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

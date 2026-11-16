@@ -6,10 +6,10 @@
 
     // Hàm phụ trợ dùng Reflection để đọc giá trị từ Model bất kể tên thuộc tính trong CSDL là gì
     Func<string, string> GetVal = (string propName) =>
-    {
-        var prop = Model.GetType().GetProperty(propName);
-        return prop != null ? prop.GetValue(Model)?.ToString() : "";
-    };
+  {
+      var prop = Model.GetType().GetProperty(propName);
+      return prop != null ? prop.GetValue(Model)?.ToString() : "";
+  };
 
     string orderId = GetVal("OrderID") != "" ? GetVal("OrderID") : GetVal("MaDonHang");
     string customerName = GetVal("CustomerName") != "" ? GetVal("CustomerName") : GetVal("TenKhachHang");

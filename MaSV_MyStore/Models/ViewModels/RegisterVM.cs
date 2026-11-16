@@ -22,9 +22,12 @@ namespace MaSV_MyStore.Models.ViewModels
         [StringLength(100, ErrorMessage = "Họ tên tối đa 100 ký tự")]
         public string FullName { get; set; }
 
+        // ⭐️ THÊM THUỘC TÍNH NÀY ĐỂ NHẬN MÃ VÙNG ĐIỆN THOẠI (VD: +84) TỪ VIEW ĐĂNG KÝ
+        public string CountryCode { get; set; }
+
         [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
-        [StringLength(10, MinimumLength = 10, ErrorMessage = "Số điện thoại phải đúng 10 số")]
-        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Số điện thoại chỉ được chứa 10 chữ số")]
+        [StringLength(10, MinimumLength = 9, ErrorMessage = "Số điện thoại phải từ 9 đến 10 số")]
+        [RegularExpression(@"^[0-9]{9,10}$", ErrorMessage = "Số điện thoại chỉ được chứa các chữ số")]
         public string Phone { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập email")]

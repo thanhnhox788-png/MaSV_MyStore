@@ -5,52 +5,136 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Quản lý danh sách sản phẩm</h2>
-    <span class="badge bg-primary">Tổng số: @Model.Count() sản phẩm</span>
+<div class="container-fluid py-3">
+    <!-- Tiêu đề trang cao cấp -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="fas fa-boxes text-warning me-2"></i> Quản Lý Danh Sách Sản Phẩm
+            </h2>
+            <p class="text-muted small mb-0">Hệ thống quản lý giá bán, hình ảnh và cập nhật trực tiếp thời gian thực ra trang chủ</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge bg-dark text-warning border border-warning px-3 py-2 rounded-pill shadow-sm fs-6">
+                <i class="fas fa-database me-1"></i> Tổng số: @Model.Count() sản phẩm
+            </span>
+            <a href="@Url.Action("Create", "Products")" class="btn btn-warning fw-bold text-dark shadow-sm px-4 py-2 rounded-pill">
+                <i class="fas fa-plus-circle me-1"></i> Thêm mới
+            </a>
+        </div>
+    </div>
+
+    <!-- Thông báo thành công -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4 border-0 bg-success bg-opacity-10 text-success mb-4" role="alert">
+            <i class="fas fa-check-circle me-2 fs-5"></i> <span class="fw-semibold">@TempData["Success"]</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Bảng danh sách sản phẩm phong cách sang trọng -->
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden bg-white">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-center">
+                    <thead class="bg-gradient text-white text-uppercase fs-7" style="background-color: #1a1e21; letter-spacing: 0.8px;">
+                        <tr>
+                            <th class="py-3 text-secondary" style="width: 90px;">Mã SP</th>
+                            <th class="py-3 text-secondary" style="width: 110px;">Hình ảnh</th>
+                            <th class="py-3 text-start text-secondary">Tên sản phẩm</th>
+                            <th class="py-3 text-secondary">Đơn giá hiện tại</th>
+                            <th class="py-3 text-secondary" style="width: 160px;">Thao tác cập nhật</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            string imgPath = item.ProductImage;
+                            if (!string.IsNullOrEmpty(imgPath))
+                            {
+                                if (!imgPath.StartsWith("http") && !imgPath.StartsWith("https"))
+                                {
+                                    imgPath = Url.Content("~/Content/images/" + imgPath);
+                                }
+                            }
+                            else
+                            {
+                                imgPath = Url.Content("~/Content/images/no-image.jpg");
+                            }
+
+                            <tr class="product-row">
+                                <td class="fw-bold text-secondary">#@item.ProductID</td>
+                                <td>
+                                    <div class="image-zoom-wrapper">
+                                        <img src="@imgPath"
+                                             alt="@item.ProductName"
+                                             class="rounded-3 shadow-sm border product-img"
+                                             onerror="this.src='@Url.Content("~/Content/images/no-image.jpg")'" />
+                                    </div>
+                                </td>
+                                <td class="text-start fw-bold text-dark fs-6">
+                                    @item.ProductName
+                                </td>
+                                <td>
+                                    <!-- Hiển thị giá nổi bật dạng thẻ badge sang trọng -->
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill fw-bold fs-6 shadow-sm">
+                                        <i class="fas fa-tag me-1 text-danger"></i> @string.Format("{0:N0}", item.ProductPrice) đ
+                                    </span>
+                                </td>
+                                <td>
+                                    <!-- Nút Sửa dẫn đến trang chỉnh sửa giá và thông tin -->
+                                    <a href="@Url.Action("Edit", "Products", new { id = item.ProductID })" class="btn btn-sm btn-warning px-4 rounded-pill fw-bold shadow-sm btn-action-edit text-dark">
+                                        <i class="fas fa-edit me-1"></i> Sửa giá
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show">
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
+<!-- 🎨 HIỆU ỨNG CSS CAO CẤP -->
+<style>
+    .fs-7 {
+        font-size: 0.8rem;
+    }
 
-<table class="table table-bordered table-hover align-middle">
-    <thead class="table-dark">
-        <tr>
-            <th>Mã SP</th>
-            <th>Hình ảnh</th>
-            <th>Tên sản phẩm</th>
-            <th>Đơn giá</th>
-            <th width="140">Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>#@item.ProductID</td>
-                <td>
-                    <img src="@(string.IsNullOrEmpty(item.ProductImage)
-                                ? Url.Content("~/Content/images/no-image.jpg")
-                                : Url.Content("~/Content/images/" + item.ProductImage))"
-                         alt="@item.ProductName"
-                         style="width: 70px; height: 70px; object-fit: cover; border-radius: 6px;"
-                         onerror="this.src='@Url.Content("~/Content/images/no-image.jpg")'" />
-                </td>
-                <td>@item.ProductName</td>
-                <td class="text-danger fw-bold">
-                    @string.Format("{0:N0}", item.ProductPrice) ₫
-                </td>
-                <td>
-                    <a href="@Url.Action("Edit", new { id = item.ProductID })" class="btn btn-warning btn-sm">
-                        Sửa
-                    </a>
-                </td>
-            </tr>
+    .product-row {
+        transition: all 0.25s ease-in-out;
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+        .product-row:hover {
+            background-color: rgba(255, 193, 7, 0.06) !important;
+            transform: scale(1.001);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
         }
-    </tbody>
-</table>
+
+    .product-img {
+        width: 60px;
+        height: 75px;
+        object-fit: cover;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .product-row:hover .product-img {
+        transform: scale(1.12);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .btn-action-edit {
+        transition: all 0.2s ease;
+        background-color: #ffc107;
+        border: none;
+    }
+
+        .btn-action-edit:hover {
+            transform: translateY(-2px);
+            background-color: #ffca2c;
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4) !important;
+        }
+</style>
