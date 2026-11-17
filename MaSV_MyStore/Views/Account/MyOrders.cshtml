@@ -1,0 +1,109 @@
+﻿@model IEnumerable<MaSV_MyStore.Models.Order>
+
+@{
+    ViewBag.Title = "Đơn hàng của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <!-- Tiêu đề trang -->
+    <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="fas fa-shopping-bag text-primary me-2"></i> Đơn hàng của tôi
+            </h2>
+            <p class="text-muted small mb-0">Theo dõi trạng thái, ngày giờ và chi tiết các đơn hàng bạn đã mua trên hệ thống</p>
+        </div>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-dark rounded-pill px-4 fw-bold shadow-sm">
+            <i class="fas fa-arrow-left me-1"></i> Tiếp tục mua sắm
+        </a>
+    </div>
+
+    <!-- Kiểm tra nếu có đơn hàng -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden bg-white">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 text-center">
+                        <thead class="table-dark text-uppercase fs-7 text-secondary">
+                            <tr>
+                                <th class="py-3" style="width: 120px;">Mã đơn hàng</th>
+                                <th class="py-3">Ngày giờ đặt</th>
+                                <th class="py-3">Trạng thái</th>
+                                <th class="py-3" style="width: 160px;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="order-item-row">
+                                    <td class="fw-bold text-primary">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill shadow-sm">
+                                            #@item.OrderID
+                                        </span>
+                                    </td>
+                                    <td class="text-dark fw-semibold">
+                                        <i class="far fa-clock text-muted me-1"></i> @item.OrderDate
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 rounded-pill fw-bold shadow-sm">
+                                            <i class="fas fa-shipping-fast me-1"></i> @(string.IsNullOrEmpty(item.Status) ? "Đang xử lý" : item.Status)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <!-- ⭐️ ĐÃ FIX: Trỏ đúng về Details của AccountController -->
+                                        <a href="@Url.Action("Details", "Account", new { id = item.OrderID })" class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold shadow-sm btn-action-view">
+                                            <i class="fas fa-eye me-1"></i> Xem chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Hiển thị khi chưa có đơn hàng nào -->
+        <div class="text-center py-5 card shadow-sm border-0 rounded-4 bg-white">
+            <div class="card-body py-5">
+                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                <h5 class="fw-bold text-dark">Bạn chưa có đơn hàng nào!</h5>
+                <p class="text-muted small mb-4">Hãy khám phá các sản phẩm tuyệt vời của chúng tôi và tiến hành đặt hàng nhé.</p>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm text-dark">
+                    <i class="fas fa-shopping-cart me-2"></i> Mua sắm ngay
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- 🎨 HIỆU ỨNG CSS -->
+<style>
+    .fs-7 {
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+
+    .order-item-row {
+        transition: all 0.25s ease-in-out;
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+        .order-item-row:hover {
+            background-color: rgba(13, 110, 253, 0.04) !important;
+            transform: scale(1.001);
+        }
+
+    .btn-action-view {
+        transition: all 0.2s ease;
+    }
+
+        .btn-action-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3) !important;
+        }
+</style>

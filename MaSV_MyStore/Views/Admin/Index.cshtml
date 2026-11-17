@@ -113,7 +113,7 @@
             <p class="text-muted mb-0">Chào mừng bạn quay trở lại hệ thống quản lý MyStore.</p>
         </div>
         <div>
-            <a href="@Url.Action("Index", "Home")" class="btn btn-outline-dark fw-bold px-3 py-2 shadow-sm">
+            <a href="@Url.Action("Index", "Home", new { area = "" })" class="btn btn-outline-dark fw-bold px-3 py-2 shadow-sm">
                 <i class="fas fa-globe me-2"></i>Xem Website chính
             </a>
         </div>
@@ -123,7 +123,7 @@
     <div class="row g-4 mb-5">
         <!-- Tổng sản phẩm -->
         <div class="col-xl-3 col-md-6">
-            <a href="@Url.Action("Index", "Products")" class="text-decoration-none">
+            <a href="@Url.Action("Index", "Products", new { area = "Admin" })" class="text-decoration-none">
                 <div class="card stat-card card-products p-4 h-100">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -138,7 +138,7 @@
 
         <!-- Tổng đơn hàng -->
         <div class="col-xl-3 col-md-6">
-            <a href="@Url.Action("Index", "Orders")" class="text-decoration-none">
+            <a href="@Url.Action("Index", "Orders", new { area = "Admin" })" class="text-decoration-none">
                 <div class="card stat-card card-orders p-4 h-100">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -153,7 +153,7 @@
 
         <!-- Khách hàng -->
         <div class="col-xl-3 col-md-6">
-            <a href="@Url.Action("Index", "Customers")" class="text-decoration-none">
+            <a href="@Url.Action("Index", "Customers", new { area = "Admin" })" class="text-decoration-none">
                 <div class="card stat-card card-customers p-4 h-100">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -190,7 +190,7 @@
     <div class="card admin-table-card p-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold text-dark mb-0"><i class="fas fa-history text-warning me-2"></i>Đơn hàng mới phát sinh</h5>
-            <a href="@Url.Action("Index", "Orders")" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">Xem tất cả</a>
+            <a href="@Url.Action("Index", "Orders", new { area = "Admin" })" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">Xem tất cả</a>
         </div>
         <div class="table-responsive">
             <table class="table align-middle mb-0">
@@ -218,13 +218,15 @@
 
                             <tr>
                                 <td class="fw-bold">
-                                    <a href="@Url.Action("Details", "Orders", new { id = oId })" class="text-primary text-decoration-none">#@oId</a>
+                                    <!-- ⭐️ Đã sửa trỏ chuẩn xác vào Orders/Details thuộc khu vực Admin -->
+                                    <a href="@Url.Action("Details", "Orders", new { area = "Admin", id = oId })" class="text-primary text-decoration-none">#@oId</a>
                                 </td>
                                 <td>#@cId</td>
                                 <td><i class="far fa-clock text-muted me-1"></i>@date</td>
                                 <td><span class="badge-status-processing">@status</span></td>
                                 <td class="text-center">
-                                    <a href="@Url.Action("Details", "Orders", new { id = oId })" class="btn btn-sm btn-outline-primary btn-admin-action">
+                                    <!-- ⭐️ Đã sửa nút Chi tiết trỏ chuẩn xác vào Orders/Details thuộc khu vực Admin -->
+                                    <a href="@Url.Action("Details", "Orders", new { area = "Admin", id = oId })" class="btn btn-sm btn-outline-primary btn-admin-action">
                                         <i class="fas fa-eye me-1"></i> Chi tiết
                                     </a>
                                 </td>

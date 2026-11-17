@@ -267,9 +267,16 @@
                                     </a>
                                 </li>
 
+                                <!-- ⭐️ MỤC 3: ĐƠN HÀNG CỦA TÔI -->
+                                <li>
+                                    <a class="dropdown-item py-2 px-3 rounded-2 text-dark" href="@Url.Action("MyOrders", "Account")">
+                                        <i class="fas fa-box-open text-info me-2"></i>Đơn hàng của tôi
+                                    </a>
+                                </li>
+
                                 <li><hr class="dropdown-divider my-2"></li>
 
-                                <!-- Mục 3: Đăng xuất -->
+                                <!-- Mục 4: Đăng xuất -->
                                 <li>
                                     <a class="dropdown-item py-2 px-3 rounded-2 text-danger fw-bold" href="@Url.Action("Logout", "Account")">
                                         <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
@@ -306,7 +313,7 @@
         @RenderBody()
     </div>
 
-    <!-- 🌟 FOOTER MÔ TẢ THƯƠNG HIỆU & CAM KẾT -->
+    <!-- ⭐️ FOOTER MÔ TẢ THƯƠNG HIỆU & CAM KẾT -->
     <footer class="footer-section">
         <div class="container">
             <div class="row g-4 justify-content-between">

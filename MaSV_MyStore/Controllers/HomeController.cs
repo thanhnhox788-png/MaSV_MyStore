@@ -41,15 +41,18 @@ namespace MaSV_MyStore.Controllers
             }
         }
 
-        // 🌟 BỔ SUNG HÀM DETAILS NÀY ĐỂ XEM CHI TIẾT SẢN PHẨM
-        public ActionResult Details(int id)
+        // 🌟 HÀM DETAILS ĐÃ ĐƯỢC TỐI ƯU CHỐNG LỆCH TÊN KHÓA CHÍNH (ID)
+        public ActionResult Details(int? id)
         {
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
+
             try
             {
-                // Tìm sản phẩm theo ID trong cơ sở dữ liệu
-                var product = db.Products.FirstOrDefault(p => p.ProductID == id);
-                // Lưu ý: Nếu cột khóa chính trong CSDL của bạn tên là MaSP hoặc ID, 
-                // hãy đổi p.ProductID thành p.MaSP hoặc p.ID tương ứng.
+                // Entity Framework hỗ trợ tìm trực tiếp theo khóa chính của bảng Product
+                var product = db.Products.Find(id);
 
                 if (product == null)
                 {

@@ -1,0 +1,128 @@
+﻿@model MaSV_MyStore.Models.Order
+
+@{
+    ViewBag.Title = "Chi tiết đơn hàng #" + Model.OrderID;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var details = ViewBag.OrderDetails as List<MaSV_MyStore.Models.ViewModels.OrderDetailVM>;
+}
+
+<div class="container py-5">
+    <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="fas fa-file-invoice text-primary me-2"></i> Chi tiết đơn hàng <span class="text-primary">#@Model.OrderID</span>
+            </h2>
+            <p class="text-muted small mb-0">Ngày đặt: <span class="fw-semibold text-dark">@Model.OrderDate</span> | Trạng thái: <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 rounded-pill fw-bold">@(string.IsNullOrEmpty(Model.Status) ? "Đang xử lý" : Model.Status)</span></p>
+        </div>
+        <a href="@Url.Action("MyOrders", "Account")" class="btn btn-outline-dark rounded-pill px-4 fw-bold shadow-sm">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Cột danh sách sản phẩm -->
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden bg-white">
+                <div class="card-header bg-dark text-white py-3 px-4">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-box me-2"></i> Danh sách sản phẩm</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 text-center">
+                            <thead class="table-light text-uppercase fs-7 text-secondary">
+                                <tr>
+                                    <th class="py-3 text-start ps-4">Sản phẩm</th>
+                                    <th class="py-3">Đơn giá</th>
+                                    <th class="py-3">Số lượng</th>
+                                    <th class="py-3 pe-4 text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (details != null && details.Any())
+                                {
+                                    decimal totalAmount = 0;
+                                    foreach (var item in details)
+                                    {
+                                        decimal price = item.Price ?? 0;
+                                        int qty = item.Quantity ?? 0;
+                                        decimal subTotal = price * qty;
+                                        totalAmount += subTotal;
+                                        <tr>
+                                            <td class="text-start ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <img src="@item.ProductImage" alt="" class="rounded-3 border me-3 shadow-sm" style="width: 50px; height: 50px; object-fit: cover;" />
+                                                    <div>
+                                                        <h6 class="fw-bold text-dark mb-0">@item.ProductName</h6>
+                                                        <small class="text-muted">Mã SP: #@item.ProductID</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="fw-semibold text-secondary">@string.Format("{0:N0}", price) đ</td>
+                                            <td>
+                                                <span class="badge bg-secondary bg-opacity-10 text-dark border px-3 py-2 rounded-pill fw-bold">@qty</span>
+                                            </td>
+                                            <td class="pe-4 text-end fw-bold text-danger">@string.Format("{0:N0}", subTotal) đ</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="py-4 text-muted">Không có sản phẩm nào trong đơn hàng này.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột thông tin tổng quan -->
+        <div class="col-lg-4">
+            <div class="card shadow-lg border-0 rounded-4 bg-white p-4">
+                <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+                    <i class="fas fa-info-circle text-warning me-2"></i> Thông tin đơn hàng
+                </h5>
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Mã đơn hàng:</span>
+                    <span class="fw-bold text-primary">#@Model.OrderID</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Thời gian đặt:</span>
+                    <span class="fw-semibold text-dark">@Model.OrderDate</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Trạng thái:</span>
+                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 rounded-pill fw-bold mt-1">
+                        <i class="fas fa-shipping-fast me-1"></i> @(string.IsNullOrEmpty(Model.Status) ? "Đang xử lý" : Model.Status)
+                    </span>
+                </div>
+                <hr class="my-3 text-secondary opacity-25">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="fw-bold text-dark">Tổng thanh toán:</span>
+                    <h4 class="fw-bold text-danger mb-0">
+                        @{
+                            decimal sumTotal = 0;
+                            if (details != null)
+                            {
+                                foreach (var d in details) { sumTotal += ((d.Price ?? 0) * (d.Quantity ?? 0)); }
+                            }
+                        }
+                        @string.Format("{0:N0}", sumTotal) đ
+                    </h4>
+                </div>
+                <a href="@Url.Action("MyOrders", "Account")" class="btn btn-primary w-100 fw-bold py-2 rounded-pill shadow-sm">
+                    <i class="fas fa-list me-1"></i> Xem danh sách đơn hàng
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fs-7 {
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+</style>

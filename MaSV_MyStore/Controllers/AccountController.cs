@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using MaSV_MyStore.Models;
-using MaSV_MyStore.Models.ViewModels; // Thêm namespace chứa RegisterVM
+using MaSV_MyStore.Models.ViewModels; // Namespace chứa RegisterVM và OrderDetailVM
 
 namespace MaSV_MyStore.Controllers
 {
@@ -70,7 +70,7 @@ namespace MaSV_MyStore.Controllers
                     Address = model.Address
                 };
 
-                // ⭐️ Dùng Reflection gán Balance = 0 (Số dư ví mặc định 0đ khi đăng ký mới)
+                // Dùng Reflection gán Balance = 0 (Số dư ví mặc định 0đ khi đăng ký mới)
                 try
                 {
                     var balanceProp = newCustomer.GetType().GetProperty("Balance");
@@ -111,7 +111,123 @@ namespace MaSV_MyStore.Controllers
             return View(customer);
         }
 
-        // 6. Đăng xuất
+        // 6. Xem lịch sử "Đơn hàng của tôi" của khách hàng đang đăng nhập
+        [HttpGet]
+        public ActionResult MyOrders()
+        {
+            // Lấy thông tin khách hàng từ Session
+            var customerSession = Session["Customer"] as Customer;
+            string username = Session["Username"]?.ToString();
+
+            if (customerSession == null && string.IsNullOrEmpty(username))
+            {
+                TempData["Error"] = "Vui lòng đăng nhập để xem lịch sử đơn hàng!";
+                return RedirectToAction("Login", "Account");
+            }
+
+            try
+            {
+                // Xác định mã khách hàng (CustomerID)
+                int customerId = 0;
+                if (customerSession != null)
+                {
+                    customerId = customerSession.CustomerID;
+                }
+                else
+                {
+                    var cus = db.Customers.FirstOrDefault(x => x.Username == username);
+                    if (cus != null) { customerId = cus.CustomerID; }
+                }
+
+                // Truy vấn danh sách đơn hàng của riêng khách hàng này (mới nhất lên đầu)
+                var myOrders = db.Orders
+                                 .Where(o => o.CustomerID == customerId)
+                                 .OrderByDescending(o => o.OrderID)
+                                 .ToList();
+
+                return View(myOrders);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi xem MyOrders: " + ex.Message);
+                return View(Enumerable.Empty<Order>());
+            }
+        }
+
+        // 7. Xem chi tiết đơn hàng dành riêng cho khách hàng
+        [HttpGet]
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("MyOrders");
+            }
+
+            try
+            {
+                var order = db.Orders.Find(id);
+                if (order == null)
+                {
+                    return HttpNotFound();
+                }
+
+                // Lấy danh sách chi tiết đơn hàng theo OrderID
+                var orderDetails = db.OrderDetails.Where(x => x.OrderID == id).ToList();
+
+                var displayDetails = orderDetails.Select(od => {
+                    var product = db.Products.FirstOrDefault(p => p.ProductID == od.ProductID);
+
+                    string pName = product != null ? product.ProductName : "Sản phẩm";
+                    string rawImg = product != null ? product.ProductImage : "";
+
+                    // Lấy đơn giá và số lượng trực tiếp từ CSDL
+                    decimal price = od.UnitPrice;
+                    int qty = od.Quantity;
+
+                    string pImage = "";
+                    string nameLower = pName.ToLower();
+
+                    if (nameLower.Contains("conan"))
+                    {
+                        pImage = "https://cdn1.fahasa.com/media/catalog/product/t/h/tham-tu-lung-danh-conan_tap-23_-tb-2023.jpg";
+                    }
+                    else if (nameLower.Contains("babylon") || nameLower.Contains("giàu nhất"))
+                    {
+                        pImage = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
+                    }
+                    else if (nameLower.Contains("tâm lý") || nameLower.Contains("đám đông"))
+                    {
+                        pImage = "https://pos.nvncdn.com/fd5775-40602/ps/20240115_0ajcFr7hKU.jpeg?v=1705298977";
+                    }
+                    else
+                    {
+                        pImage = !string.IsNullOrEmpty(rawImg) && rawImg.StartsWith("http")
+                                    ? rawImg
+                                    : "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=500&q=80";
+                    }
+
+                    return new OrderDetailVM
+                    {
+                        ProductID = od.ProductID,
+                        Quantity = qty,
+                        Price = price,
+                        ProductName = pName,
+                        ProductImage = pImage
+                    };
+                }).ToList();
+
+                ViewBag.OrderDetails = displayDetails;
+
+                return View(order);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi chi tiết đơn hàng khách: " + ex.Message);
+                return RedirectToAction("MyOrders");
+            }
+        }
+
+        // 8. Đăng xuất
         public ActionResult Logout()
         {
             Session.Clear();
