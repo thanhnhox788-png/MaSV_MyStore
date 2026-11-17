@@ -50,9 +50,42 @@
                             string oId = iType.GetProperty("OrderID")?.GetValue(item)?.ToString() ?? iType.GetProperty("MaDonHang")?.GetValue(item)?.ToString();
                             string cId = iType.GetProperty("CustomerID")?.GetValue(item)?.ToString() ?? iType.GetProperty("MaKhachHang")?.GetValue(item)?.ToString();
                             string date = iType.GetProperty("OrderDate")?.GetValue(item)?.ToString() ?? iType.GetProperty("NgayDat")?.GetValue(item)?.ToString();
-                            string status = iType.GetProperty("Status")?.GetValue(item)?.ToString() ?? iType.GetProperty("TrangThai")?.GetValue(item)?.ToString();
 
-                            if (string.IsNullOrEmpty(status)) { status = "Đang xử lý"; }
+                            // 🌟 ĐỌC TRẠNG THÁI ĐỘNG AN TOÀN TUYỆT ĐỐI (Quét quét qua mọi khả năng tên cột)
+                            string status = "";
+                            try
+                            {
+                                var valObj = iType.GetProperty("OrderStatus")?.GetValue(item)
+                                          ?? iType.GetProperty("Status")?.GetValue(item)
+                                          ?? iType.GetProperty("TrangThai")?.GetValue(item)
+                                          ?? iType.GetProperty("TinhTrang");
+                                if (valObj != null)
+                                {
+                                    status = valObj.ToString();
+                                }
+                            }
+                            catch { }
+
+                            if (string.IsNullOrEmpty(status))
+                            {
+                                status = "Đang xử lý";
+                            }
+                            status = status.Trim();
+
+                            // 🌟 PHÂN LOẠI MÀU SẮC BADGE ĐỘNG THEO THỜI GIAN THỰC
+                            string badgeClass = "bg-warning bg-opacity-10 text-warning border-warning"; // Mặc định: Đang xử lý
+                            if (status.Contains("thành công") || status.Contains("Đã giao") || status.Contains("Hoàn thành"))
+                            {
+                                badgeClass = "bg-success bg-opacity-10 text-success border-success";
+                            }
+                            else if (status.Contains("hủy") || status.Contains("Hủy"))
+                            {
+                                badgeClass = "bg-danger bg-opacity-10 text-danger border-danger";
+                            }
+                            else if (status.Contains("vận chuyển"))
+                            {
+                                badgeClass = "bg-info bg-opacity-10 text-info border-info";
+                            }
 
                             <tr class="order-row">
                                 <td class="fw-bold text-secondary">
@@ -66,7 +99,8 @@
                                     <i class="far fa-clock text-muted me-1"></i> @date
                                 </td>
                                 <td>
-                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 rounded-pill fw-bold shadow-sm">
+                                    <!-- Hiển thị badge màu sắc linh hoạt đồng bộ tuyệt đối với trang chi tiết -->
+                                    <span class="badge @badgeClass border px-3 py-2 rounded-pill fw-bold shadow-sm">
                                         @status
                                     </span>
                                 </td>

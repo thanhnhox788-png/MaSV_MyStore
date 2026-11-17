@@ -77,6 +77,32 @@ namespace MaSV_MyStore.Controllers
             }
         }
 
+        // 🌟 BỔ SUNG ACTION XỬ LÝ NÚT "MUA NGAY" TRÁNH LỖI 404 /Order/Checkout
+        [HttpGet]
+        public ActionResult BuyNow(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                var product = db.Products.Find(id);
+                if (product == null)
+                {
+                    return HttpNotFound("Không tìm thấy sản phẩm.");
+                }
+
+                // Chuyển hướng sang trang chi tiết hoặc trang giỏ hàng/thanh toán tương ứng
+                return RedirectToAction("Details", new { id = id });
+            }
+            catch
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
         public ActionResult About() => View();
         public ActionResult Contact() => View();
     }

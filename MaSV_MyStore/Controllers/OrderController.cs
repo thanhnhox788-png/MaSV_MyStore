@@ -10,8 +10,8 @@ namespace MaSV_MyStore.Controllers
     {
         private CartService cartService = new CartService();
 
-        // 1. GET: Order/Checkout - Hiển thị trang thanh toán
-        public ActionResult Checkout()
+        // 1. GET: Order/Checkout - Hiển thị trang thanh toán
+        public ActionResult Checkout()
         {
             var cart = cartService.GetCart();
             if (cart == null || !cart.Items.Any())
@@ -22,8 +22,8 @@ namespace MaSV_MyStore.Controllers
             return View(cart);
         }
 
-        // 2. POST: Order/Checkout - Xử lý lưu đơn hàng
-        [HttpPost]
+        // 2. POST: Order/Checkout - Xử lý lưu đơn hàng
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Checkout(string customerName, string phone, string address, string paymentMethod)
         {
@@ -34,8 +34,8 @@ namespace MaSV_MyStore.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
-            // Tính tổng tiền giỏ hàng an toàn
-            decimal totalAmount = cart.Items.Sum(x => x.Quantity * x.ProductPrice);
+            // Tính tổng tiền giỏ hàng an toàn
+            decimal totalAmount = cart.Items.Sum(x => x.Quantity * x.ProductPrice);
 
             using (var db = new MyStoreEntities1())
             {
@@ -45,18 +45,18 @@ namespace MaSV_MyStore.Controllers
                     {
                         Customer customer = null;
 
-                        // Lấy thông tin tài khoản đang đăng nhập từ Session
-                        var sessionUser = Session["Username"] ?? Session["Account"];
+                        // Lấy thông tin tài khoản đang đăng nhập từ Session
+                        var sessionUser = Session["Username"] ?? Session["Account"];
 
                         if (sessionUser != null)
                         {
                             string usernameStr = sessionUser.ToString();
-                            // Tìm khách hàng trong database theo Username
-                            customer = db.Customers.FirstOrDefault(c => c.Username == usernameStr);
+                            // Tìm khách hàng trong database theo Username
+                            customer = db.Customers.FirstOrDefault(c => c.Username == usernameStr);
                         }
 
-                        // Nếu khách vãng lai chưa đăng nhập -> Tạo mới tài khoản khách vãng lai
-                        if (customer == null)
+                        // Nếu khách vãng lai chưa đăng nhập -> Tạo mới tài khoản khách vãng lai
+                        if (customer == null)
                         {
                             customer = new Customer();
                             customer.CustomerName = customerName;
@@ -68,19 +68,19 @@ namespace MaSV_MyStore.Controllers
                             customer.Email = uniqueKey + "@gmail.com";
                             customer.Password = "123456";
 
-                            // Gán số dư bằng 0 nếu có thuộc tính Balance
-                            customer.GetType().GetProperty("Balance")?.SetValue(customer, 0m);
+                            // Gán số dư bằng 0 nếu có thuộc tính Balance
+                            customer.GetType().GetProperty("Balance")?.SetValue(customer, 0m);
 
                             db.Customers.Add(customer);
                             db.SaveChanges(); // Lưu để sinh CustomerID
-                        }
+                        }
 
-                        // Lấy CustomerID linh hoạt theo tên property có sẵn
-                        int customerId = (int)(customer.GetType().GetProperty("CustomerID")?.GetValue(customer)
-                                                ?? customer.GetType().GetProperty("MaKH")?.GetValue(customer) ?? 1);
+                        // Lấy CustomerID linh hoạt theo tên property có sẵn
+                        int customerId = (int)(customer.GetType().GetProperty("CustomerID")?.GetValue(customer)
+                        ?? customer.GetType().GetProperty("MaKH")?.GetValue(customer) ?? 1);
 
-                        // ⭐️ XỬ LÝ THANH TOÁN BẰNG SỐ DƯ TÀI KHOẢN TRÊN WEB (WebBalance)
-                        if (paymentMethod == "WebBalance")
+                        // ⭐️ XỬ LÝ THANH TOÁN BẰNG SỐ DƯ TÀI KHOẢN TRÊN WEB (WebBalance)
+                        if (paymentMethod == "WebBalance")
                         {
                             var balanceProp = customer.GetType().GetProperty("Balance");
                             decimal currentBalance = balanceProp != null ? (decimal)(balanceProp.GetValue(customer) ?? 0m) : 0m;
@@ -92,14 +92,14 @@ namespace MaSV_MyStore.Controllers
                                 return View(cart);
                             }
 
-                            // Tiến hành trừ tiền và cập nhật lại vào model
-                            decimal newBalance = currentBalance - totalAmount;
+                            // Tiến hành trừ tiền và cập nhật lại vào model
+                            decimal newBalance = currentBalance - totalAmount;
                             balanceProp?.SetValue(customer, newBalance);
                             db.Entry(customer).State = System.Data.Entity.EntityState.Modified;
                         }
 
-                        // Tạo Đơn hàng (Order) dùng Reflection để tự động tương thích mọi tên cột (Anh/Việt)
-                        var order = new Order();
+                        // Tạo Đơn hàng (Order) dùng Reflection để tự động tương thích mọi tên cột (Anh/Việt)
+                        var order = new Order();
                         order.GetType().GetProperty("CustomerID")?.SetValue(order, customerId);
                         order.GetType().GetProperty("MaKH")?.SetValue(order, customerId);
 
@@ -119,11 +119,11 @@ namespace MaSV_MyStore.Controllers
                         db.Orders.Add(order);
                         db.SaveChanges(); // Lưu để sinh OrderID
 
-                        int orderId = (int)(order.GetType().GetProperty("OrderID")?.GetValue(order)
-                                             ?? order.GetType().GetProperty("MaDonHang")?.GetValue(order) ?? 0);
+                        int orderId = (int)(order.GetType().GetProperty("OrderID")?.GetValue(order)
+                   ?? order.GetType().GetProperty("MaDonHang")?.GetValue(order) ?? 0);
 
-                        // Lưu chi tiết đơn hàng (OrderDetail)
-                        foreach (var item in cart.Items)
+                        // Lưu chi tiết đơn hàng (OrderDetail)
+                        foreach (var item in cart.Items)
                         {
                             var detail = new OrderDetail();
                             detail.GetType().GetProperty("OrderID")?.SetValue(detail, orderId);
@@ -144,12 +144,12 @@ namespace MaSV_MyStore.Controllers
                         db.SaveChanges();
                         transaction.Commit();
 
-                        // Xóa sạch giỏ hàng sau khi đặt thành công
-                        cart.Clear();
+                        // Xóa sạch giỏ hàng sau khi đặt thành công
+                        cart.Clear();
                         cartService.SaveCart(cart);
 
-                        // Chuyển hướng sang trang thành công
-                        return RedirectToAction("OrderSuccess", new { id = orderId });
+                        // Chuyển hướng sang trang thành công
+                        return RedirectToAction("OrderSuccess", new { id = orderId });
                     }
                     catch (Exception ex)
                     {
@@ -162,11 +162,48 @@ namespace MaSV_MyStore.Controllers
             }
         }
 
-        // 3. GET: Order/OrderSuccess
-        public ActionResult OrderSuccess(int id)
+        // 3. GET: Order/OrderSuccess
+        public ActionResult OrderSuccess(int id)
         {
             ViewBag.OrderId = id;
             return View();
+        }
+
+        // 🌟 4. POST: Order/UpdateStatus - Cập nhật trạng thái đơn hàng (Đồng bộ thời gian thực chuẩn Admin)
+        [HttpPost]
+        public ActionResult UpdateStatus(int orderId, string newStatus)
+        {
+            try
+            {
+                using (var db = new MyStoreEntities1())
+                {
+                    var order = db.Orders.FirstOrDefault(o => o.OrderID == orderId);
+                    if (order != null)
+                    {
+                        // Dùng Reflection an toàn để quét và cập nhật đúng tên cột trạng thái trong CSDL
+                        var type = order.GetType();
+                        var prop = type.GetProperty("OrderStatus")
+                            ?? type.GetProperty("TrangThai")
+                            ?? type.GetProperty("Status")
+                            ?? type.GetProperty("TinhTrang");
+
+                        if (prop != null && prop.CanWrite)
+                        {
+                            string targetStatus = string.IsNullOrEmpty(newStatus) ? "Giao hàng thành công" : newStatus;
+                            prop.SetValue(order, targetStatus);
+                            db.SaveChanges();
+                            TempData["Success"] = "Cập nhật trạng thái đơn hàng thành công!";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi cập nhật trạng thái: " + ex.Message);
+            }
+
+            // 🌟 Điều hướng chính xác về lại trang chi tiết đơn hàng của Admin (thay vì trang cá nhân)
+            return Redirect("~//Admin/Details/" + orderId);
         }
     }
 }

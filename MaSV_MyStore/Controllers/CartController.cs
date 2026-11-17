@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using MaSV_MyStore.Models.ViewModels;
 
@@ -69,6 +70,51 @@ namespace MaSV_MyStore.Controllers
         public ActionResult BuyNow(int id, int quantity = 1)
         {
             return Checkout(id, quantity);
+        }
+
+        // 🌟 3.1. THÊM CHỨC NĂNG MUA LẠI ĐƠN HÀNG (GIỐNG CÁC WEB LỚN)
+        public ActionResult BuyAgain(int? orderId)
+        {
+            if (GetLoggedUser() == null)
+            {
+                TempData["Error"] = "Hãy đăng nhập để mua hàng!";
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (orderId == null)
+            {
+                return RedirectToAction("MyOrders", "Account");
+            }
+
+            try
+            {
+                using (var db = new MaSV_MyStore.Models.MyStoreEntities1())
+                {
+                    var order = db.Orders.Include("OrderDetails").FirstOrDefault(o => o.OrderID == orderId);
+                    if (order == null || order.OrderDetails == null || !order.OrderDetails.Any())
+                    {
+                        TempData["Error"] = "Không tìm thấy thông tin đơn hàng để mua lại.";
+                        return RedirectToAction("MyOrders", "Account");
+                    }
+
+                    var cart = cartService.GetCart();
+                    foreach (var detail in order.OrderDetails)
+                    {
+                        if (detail.ProductID > 0 && detail.Quantity > 0)
+                        {
+                            cart.AddItem(detail.ProductID, detail.Quantity);
+                        }
+                    }
+                    cartService.SaveCart(cart);
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi Mua lại đơn hàng: " + ex.Message);
+                return RedirectToAction("MyOrders", "Account");
+            }
         }
 
         // 4. POST: Cart/UpdateQuantity - Cập nhật số lượng

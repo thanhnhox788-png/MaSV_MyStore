@@ -4,14 +4,41 @@
     ViewBag.Title = "Chi tiết đơn hàng";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
-    // Xử lý lấy OrderID an toàn tuyệt đối
     var oModel = Model;
     string orderId = "";
     try { orderId = (oModel.GetType().GetProperty("OrderID")?.GetValue(oModel) ?? oModel.GetType().GetProperty("MaDonHang")?.GetValue(oModel))?.ToString(); } catch { }
 
-    // Xử lý lấy CustomerID an toàn tuyệt đối
     string customerId = "";
     try { customerId = (oModel.GetType().GetProperty("CustomerID")?.GetValue(oModel) ?? oModel.GetType().GetProperty("MaKhachHang")?.GetValue(oModel))?.ToString(); } catch { }
+
+    // 🌟 ĐỌC TRẠNG THÁI HIỆN TẠI TỪ CƠ SỞ DỮ LIỆU
+    string currentStatus = "Đang xử lý";
+    try
+    {
+        var statusVal = oModel.GetType().GetProperty("OrderStatus")?.GetValue(oModel)
+                     ?? oModel.GetType().GetProperty("TrangThai")?.GetValue(oModel)
+                     ?? oModel.GetType().GetProperty("Status")?.GetValue(oModel);
+        if (statusVal != null && !string.IsNullOrEmpty(statusVal.ToString()))
+        {
+            currentStatus = statusVal.ToString().Trim();
+        }
+    }
+    catch { }
+
+    // Phân loại màu badge theo trạng thái
+    string badgeColor = "bg-warning text-dark";
+    if (currentStatus.Contains("thành công") || currentStatus.Contains("Đã giao"))
+    {
+        badgeColor = "bg-success text-white";
+    }
+    else if (currentStatus.Contains("hủy") || currentStatus.Contains("Hủy"))
+    {
+        badgeColor = "bg-danger text-white";
+    }
+    else if (currentStatus.Contains("vận chuyển"))
+    {
+        badgeColor = "bg-info text-dark";
+    }
 
     // Xử lý định dạng ngày giờ đặt hàng chuẩn xác
     string orderDateStr = "N/A";
@@ -42,19 +69,39 @@
 }
 
 <div class="container my-4">
-    <div class="card shadow-sm p-4 border-0">
+    <div class="card shadow-sm p-4 border-0 rounded-4">
         <h2 class="fw-bold mb-4 text-primary">
             <i class="fas fa-file-invoice me-2"></i>Chi tiết đơn hàng #@orderId
         </h2>
 
-        <!-- Thông tin chung đơn hàng -->
-        <div class="row mb-4 bg-light p-3 rounded">
-            <div class="col-md-6">
+        <!-- Thông tin chung đơn hàng & Form cập nhật trạng thái -->
+        <div class="row mb-4 bg-light p-3 rounded-4 align-items-center">
+            <div class="col-md-5">
                 <p class="mb-2"><strong>Mã khách hàng:</strong> @(string.IsNullOrEmpty(customerId) ? "N/A" : customerId)</p>
                 <p class="mb-0"><strong>Ngày giờ đặt:</strong> <span class="text-dark fw-bold">@orderDateStr</span></p>
             </div>
-            <div class="col-md-6 text-md-end">
-                <p class="mb-0"><strong>Trạng thái:</strong> <span class="badge bg-warning text-dark px-3 py-2">Đang xử lý</span></p>
+
+            <div class="col-md-3 text-md-center my-2 my-md-0">
+                <p class="mb-1 text-muted small">Trạng thái hiện tại:</p>
+                <span class="badge @badgeColor px-3 py-2 fs-6 fw-bold">@currentStatus</span>
+            </div>
+
+            <!-- 🌟 FORM CẬP NHẬT TRẠNG THÁI (Giao hàng thành công / Hủy / Đang xử lý...) -->
+            <div class="col-md-4">
+                @using (Html.BeginForm("UpdateStatus", "Order", new { area = "" }, FormMethod.Post, new { @class = "d-flex gap-2 align-items-center" }))
+                {
+                    <input type="hidden" name="orderId" value="@orderId" />
+                    <select name="newStatus" class="form-select form-select-sm rounded-pill">
+                        <option value="Chờ thanh toán" @(currentStatus == "Chờ thanh toán" ? "selected" : "")>Chờ thanh toán</option>
+                        <option value="Đang xử lý" @(currentStatus == "Đang xử lý" ? "selected" : "")>Đang xử lý</option>
+                        <option value="Đang vận chuyển" @(currentStatus == "Đang vận chuyển" ? "selected" : "")>Đang vận chuyển</option>
+                        <option value="Giao hàng thành công" @(currentStatus.Contains("thành công") || currentStatus.Contains("Đã giao") ? "selected" : "")>Giao hàng thành công</option>
+                        <option value="Đã hủy" @(currentStatus.Contains("hủy") ? "selected" : "")>Đã hủy</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 fw-bold shadow-sm text-nowrap">
+                        <i class="fas fa-save me-1"></i> Cập nhật
+                    </button>
+                }
             </div>
         </div>
 
@@ -75,7 +122,6 @@
                 <tbody>
                     @{
                         decimal totalOrderAmount = 0;
-                        // Lấy danh sách chi tiết đơn hàng từ ViewBag
                         var details = ViewBag.OrderDetails as IEnumerable<object>;
                         if (details != null)
                         {
@@ -110,7 +156,7 @@
         </div>
 
         <div class="mt-4">
-            <a href="@Url.Action("Orders", "Admin")" class="btn btn-secondary">
+            <a href="@Url.Action("Orders", "Admin")" class="btn btn-secondary rounded-pill px-4">
                 <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách đơn hàng
             </a>
         </div>

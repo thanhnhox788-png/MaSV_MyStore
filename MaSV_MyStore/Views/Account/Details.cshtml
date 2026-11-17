@@ -4,6 +4,7 @@
     ViewBag.Title = "Chi tiết đơn hàng #" + Model.OrderID;
     Layout = "~/Views/Shared/_Layout.cshtml";
     var details = ViewBag.OrderDetails as List<MaSV_MyStore.Models.ViewModels.OrderDetailVM>;
+    string currentStatus = !string.IsNullOrEmpty(Model.Status) ? Model.Status : "Đang xử lý";
 }
 
 <div class="container py-5">
@@ -12,7 +13,7 @@
             <h2 class="fw-bold text-dark mb-1">
                 <i class="fas fa-file-invoice text-primary me-2"></i> Chi tiết đơn hàng <span class="text-primary">#@Model.OrderID</span>
             </h2>
-            <p class="text-muted small mb-0">Ngày đặt: <span class="fw-semibold text-dark">@Model.OrderDate</span> | Trạng thái: <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 rounded-pill fw-bold">@(string.IsNullOrEmpty(Model.Status) ? "Đang xử lý" : Model.Status)</span></p>
+            <p class="text-muted small mb-0">Ngày đặt: <span class="fw-semibold text-dark">@Model.OrderDate</span> | Trạng thái: <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 rounded-pill fw-bold">@currentStatus</span></p>
         </div>
         <a href="@Url.Action("MyOrders", "Account")" class="btn btn-outline-dark rounded-pill px-4 fw-bold shadow-sm">
             <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
@@ -95,7 +96,7 @@
                 <div class="mb-3">
                     <span class="text-muted small d-block">Trạng thái:</span>
                     <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3 py-2 rounded-pill fw-bold mt-1">
-                        <i class="fas fa-shipping-fast me-1"></i> @(string.IsNullOrEmpty(Model.Status) ? "Đang xử lý" : Model.Status)
+                        <i class="fas fa-shipping-fast me-1"></i> @currentStatus
                     </span>
                 </div>
                 <hr class="my-3 text-secondary opacity-25">
@@ -112,9 +113,20 @@
                         @string.Format("{0:N0}", sumTotal) đ
                     </h4>
                 </div>
-                <a href="@Url.Action("MyOrders", "Account")" class="btn btn-primary w-100 fw-bold py-2 rounded-pill shadow-sm">
+
+                <a href="@Url.Action("MyOrders", "Account")" class="btn btn-primary w-100 fw-bold py-2 rounded-pill shadow-sm mb-2">
                     <i class="fas fa-list me-1"></i> Xem danh sách đơn hàng
                 </a>
+
+                <!-- 🌟 NÚT HỦY ĐƠN HÀNG (Chỉ hiện khi đơn đang ở trạng thái Đang xử lý hoặc Chờ thanh toán) -->
+                @if (currentStatus.Contains("Đang xử lý") || currentStatus.Contains("Chờ thanh toán"))
+                {
+                    <a href="@Url.Action("CancelOrder", "Account", new { id = Model.OrderID })"
+                       class="btn btn-outline-danger w-100 fw-bold py-2 rounded-pill shadow-sm"
+                       onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                        <i class="fas fa-times-circle me-1"></i> Hủy đơn hàng
+                    </a>
+                }
             </div>
         </div>
     </div>

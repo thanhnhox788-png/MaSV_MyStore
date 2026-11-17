@@ -111,9 +111,9 @@ namespace MaSV_MyStore.Controllers
             return View(customer);
         }
 
-        // 6. Xem lịch sử "Đơn hàng của tôi" của khách hàng đang đăng nhập
+        // 6. Xem lịch sử "Đơn hàng của tôi" (Hỗ trợ tìm kiếm & lọc trạng thái thời gian thực chuẩn xác)
         [HttpGet]
-        public ActionResult MyOrders()
+        public ActionResult MyOrders(string searchString, string status)
         {
             // Lấy thông tin khách hàng từ Session
             var customerSession = Session["Customer"] as Customer;
@@ -139,11 +139,56 @@ namespace MaSV_MyStore.Controllers
                     if (cus != null) { customerId = cus.CustomerID; }
                 }
 
-                // Truy vấn danh sách đơn hàng của riêng khách hàng này (mới nhất lên đầu)
-                var myOrders = db.Orders
-                                 .Where(o => o.CustomerID == customerId)
-                                 .OrderByDescending(o => o.OrderID)
-                                 .ToList();
+                // Truy vấn cơ bản các đơn hàng của riêng khách hàng này
+                var ordersQuery = db.Orders.Where(o => o.CustomerID == customerId).AsQueryable();
+
+                // 🌟 TÍCH HỢP TÌM KIẾM (Theo Mã đơn hàng hoặc Tên sản phẩm)
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    ordersQuery = ordersQuery.Where(o => o.OrderID.ToString().Contains(searchString) ||
+                                                         o.OrderDetails.Any(d => d.Product.ProductName.Contains(searchString)));
+                }
+
+                System.Collections.Generic.List<Order> myOrders;
+
+                // 🌟 LỌC THEO TAB TRẠNG THÁI THỜI GIAN THỰC (Đã cập nhật đồng bộ tab "Đã giao" và "Giao hàng thành công")
+                if (!string.IsNullOrEmpty(status) && status != "Tất cả")
+                {
+                    var allOrders = ordersQuery.OrderByDescending(o => o.OrderID).ToList();
+                    myOrders = allOrders.Where(o => {
+                        var type = o.GetType();
+                        string val = type.GetProperty("OrderStatus")?.GetValue(o)?.ToString()
+                                  ?? type.GetProperty("TrangThai")?.GetValue(o)?.ToString()
+                                  ?? type.GetProperty("Status")?.GetValue(o)?.ToString() ?? "";
+
+                        val = val.Trim();
+                        string targetStatus = status.Trim();
+
+                        // Nếu trong Database chưa lưu trạng thái (chuỗi rỗng), mặc định hiểu đây là đơn "Đang xử lý"
+                        if (string.IsNullOrEmpty(val))
+                        {
+                            val = "Đang xử lý";
+                        }
+
+                        // 🌟 ÁNH XẠ CHUẨN XÁC CHO TAB "ĐÃ GIAO"
+                        if (targetStatus.Equals("Đã giao", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return val.IndexOf("Đã giao", StringComparison.OrdinalIgnoreCase) >= 0
+                                || val.IndexOf("thành công", StringComparison.OrdinalIgnoreCase) >= 0
+                                || val.IndexOf("Hoàn thành", StringComparison.OrdinalIgnoreCase) >= 0;
+                        }
+
+                        // So sánh không phân biệt hoa thường và hỗ trợ tìm kiếm chứa từ khóa
+                        return val.IndexOf(targetStatus, StringComparison.OrdinalIgnoreCase) >= 0;
+                    }).Take(50).ToList();
+                }
+                else
+                {
+                    myOrders = ordersQuery.OrderByDescending(o => o.OrderID).Take(50).ToList();
+                }
+
+                ViewBag.SearchString = searchString;
+                ViewBag.CurrentStatus = status ?? "Tất cả";
 
                 return View(myOrders);
             }
@@ -225,6 +270,49 @@ namespace MaSV_MyStore.Controllers
                 System.Diagnostics.Debug.WriteLine("Lỗi chi tiết đơn hàng khách: " + ex.Message);
                 return RedirectToAction("MyOrders");
             }
+        }
+
+        // 🌟 7.1. HỦY ĐƠN HÀNG DÀNH CHO KHÁCH HÀNG
+        [HttpGet]
+        public ActionResult CancelOrder(int? id)
+        {
+            var customerSession = Session["Customer"] as Customer;
+            string username = Session["Username"]?.ToString();
+
+            if (customerSession == null && string.IsNullOrEmpty(username))
+            {
+                TempData["Error"] = "Vui lòng đăng nhập để thực hiện!";
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (id == null)
+            {
+                return RedirectToAction("MyOrders");
+            }
+
+            try
+            {
+                var order = db.Orders.FirstOrDefault(o => o.OrderID == id);
+                if (order != null)
+                {
+                    var type = order.GetType();
+                    var prop = type.GetProperty("OrderStatus")
+                            ?? type.GetProperty("TrangThai")
+                            ?? type.GetProperty("Status");
+
+                    if (prop != null && prop.CanWrite)
+                    {
+                        prop.SetValue(order, "Đã hủy");
+                        db.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi hủy đơn hàng: " + ex.Message);
+            }
+
+            return RedirectToAction("Details", new { id = id });
         }
 
         // 8. Đăng xuất
