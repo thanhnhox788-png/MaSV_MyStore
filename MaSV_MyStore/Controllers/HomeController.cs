@@ -10,12 +10,21 @@ namespace MaSV_MyStore.Controllers
     {
         private MyStoreEntities1 db = new MyStoreEntities1();
 
-        public ActionResult Index()
+        // 🌟 ĐÃ TÍCH HỢP TÌM KIẾM DỰA TRÊN CODE GỐC CỦA BẠN
+        public ActionResult Index(string searchString)
         {
             try
             {
-                // Lấy danh sách sản phẩm từ cơ sở dữ liệu
-                var products = db.Products.ToList();
+                // Lấy danh sách sản phẩm dưới dạng AsQueryable để hỗ trợ lọc tìm kiếm
+                var productsQuery = db.Products.AsQueryable();
+
+                // Nếu người dùng nhập từ khóa tìm kiếm
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    productsQuery = productsQuery.Where(p => p.ProductName.Contains(searchString));
+                }
+
+                var products = productsQuery.ToList();
 
                 // Nếu bạn dùng ViewModel (HomeProductVM)
                 var viewModel = new HomeProductVM();

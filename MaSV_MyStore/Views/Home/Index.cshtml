@@ -5,149 +5,118 @@
 }
 
 <style>
-
-
     /* --- 🌟 HIỆU ỨNG XUẤT HIỆN MƯỢT MÀ KHI MỚI VÀO WEB (FADE-IN & SLIDE-UP) --- */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(25px);
+        }
 
-    /* Lưu ý: Dùng @@keyframes trong Razor view để tránh lỗi biên dịch C# */
-        @@keyframes fadeInUp {
-                from
-
-    {
-                    opacity: 0;
-                    transform: translateY(25px);
-
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-            to {
-                    opacity: 1;
-                    transform: translateY(0);
-
+    .hero-banner {
+        animation: fadeInUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        background: linear-gradient(135deg, #12121c 0%, #1e1e2f 100%);
+        color: #fff;
+        border-radius: 16px;
+        padding: 45px 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(212, 175, 55, 0.2);
     }
 
-
+    .search-box-wrapper {
+        animation: fadeInUp 0.85s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
     }
 
-        .hero-banner {
-                animation: fadeInUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-                background: linear-gradient(135deg, #12121c 0%, #1e1e2f 100%);
-                color: #fff;
-                border-radius: 16px;
-                padding: 45px 40px;
-                margin-bottom: 40px;
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-                border: 1px solid rgba(212, 175, 55, 0.2);
-
+    .section-title {
+        animation: fadeInUp 0.9s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
     }
-
-        .section-title {
-                animation: fadeInUp 0.9s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-
-    }
-
-
 
     /* Hiệu ứng xuất hiện lần lượt cho từng cột sản phẩm tạo chiều sâu */
-        .product-col {
-                opacity: 0;
-                animation: fadeInUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-
+    .product-col {
+        opacity: 0;
+        animation: fadeInUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
     }
 
-                .product-col:nth-child(1) {
-                        animation-delay: 0.1s;
-
+        .product-col:nth-child(1) {
+            animation-delay: 0.1s;
         }
 
-                .product-col:nth-child(2) {
-                        animation-delay: 0.2s;
-
+        .product-col:nth-child(2) {
+            animation-delay: 0.2s;
         }
 
-                .product-col:nth-child(3) {
-                        animation-delay: 0.3s;
-
+        .product-col:nth-child(3) {
+            animation-delay: 0.3s;
         }
 
-                .product-col:nth-child(4) {
-                        animation-delay: 0.4s;
-
+        .product-col:nth-child(4) {
+            animation-delay: 0.4s;
         }
-
-
 
     /* Card sản phẩm hiệu ứng bay bổng khi rê chuột */
-        .product-card {
-                transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-                border: 1px solid rgba(0, 0, 0, 0.06);
-                border-radius: 16px;
-                overflow: hidden;
-                background: #ffffff;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-
+    .product-card {
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
 
-                .product-card:hover {
-                        transform: translateY(-8px);
-                        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
-                        border-color: rgba(212, 175, 55, 0.5) !important;
-
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+            border-color: rgba(212, 175, 55, 0.5) !important;
         }
-
-
 
     /* Khu vực hình ảnh sách */
-        .product-img-wrapper {
-                height: 270px;
-                width: 100%;
-                overflow: hidden;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: #f8f9fa;
-                position: relative;
-
+    .product-img-wrapper {
+        height: 270px;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        position: relative;
     }
 
-                .product-img-wrapper img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-
+        .product-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .product-card:hover .product-img-wrapper img {
-                transform: scale(1.06);
-
+    .product-card:hover .product-img-wrapper img {
+        transform: scale(1.06);
     }
-
-
 
     /* Nhãn giá tiền nổi bật */
-        .price-tag {
-                font-size: 1.2rem;
-                font-weight: 700;
-                color: #d63384;
-                letter-spacing: -0.3px;
-
+    .price-tag {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #d63384;
+        letter-spacing: -0.3px;
     }
-
-
 
     /* Tối ưu hóa các nút bấm Thêm giỏ hàng & Mua ngay */
-        .product-card .btn {
-                border-radius: 8px !important;
-                font-weight: 600 !important;
-                transition: all 0.3s ease;
-                padding: 8px 12px;
-
+    .product-card .btn {
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease;
+        padding: 8px 12px;
     }
 
-                .product-card .btn:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
-
+        .product-card .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
         }
 </style>
 
@@ -165,6 +134,21 @@
         </div>
     </div>
 
+    <!-- 🔍 THANH TÌM KIẾM SẢN PHẨM -->
+    <div class="row mb-5 search-box-wrapper">
+        <div class="col-lg-7 col-md-9 mx-auto">
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+            {
+                <div class="input-group shadow-sm rounded-pill overflow-hidden border bg-white p-1">
+                    <input type="text" name="searchString" class="form-control border-0 px-4 py-2 shadow-none" placeholder="Nhập tên sách bạn muốn tìm kiếm (ví dụ: Conan, Babylon...)" value="@Request.QueryString["searchString"]">
+                    <button class="btn btn-dark px-4 fw-bold rounded-pill" type="submit">
+                        <i class="fas fa-search me-1 text-warning"></i> Tìm kiếm
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
     <!-- Tiêu đề sản phẩm -->
     <div class="d-flex align-items-center mb-4 section-title">
         <h3 class="fw-bold text-dark mb-0"><i class="fas fa-star text-warning me-2"></i>Sản phẩm nổi bật</h3>
@@ -175,75 +159,83 @@
         @{
             var displayList = (Model != null && Model.Any()) ? Model.Cast<object>().ToList() : new List<object>();
 
-            foreach (var item in displayList)
+            if (displayList.Any())
             {
-                string productName = "";
-                string displayImg = "";
-                decimal price = 125000;
-                string productId = "1";
-
-                if (item is MaSV_MyStore.Models.Product p)
+                foreach (var item in displayList)
                 {
-                    try { productName = p.GetType().GetProperty("ProductName")?.GetValue(p)?.ToString() ?? p.GetType().GetProperty("TenSanPham")?.GetValue(p)?.ToString() ?? "Sách bản quyền"; } catch { }
-                    try { productId = (p.GetType().GetProperty("ProductID")?.GetValue(p) ?? p.GetType().GetProperty("MaSanPham")?.GetValue(p))?.ToString(); } catch { }
+                    string productName = "";
+                    string displayImg = "";
+                    decimal price = 125000;
+                    string productId = "1";
 
-                    string nameLower = productName.ToLower();
-                    if (nameLower.Contains("conan"))
+                    if (item is MaSV_MyStore.Models.Product p)
                     {
-                        price = 24200;
-                        displayImg = "https://cdn1.fahasa.com/media/catalog/product/t/h/tham-tu-lung-danh-conan_tap-23_-tb-2023.jpg";
-                    }
-                    else if (nameLower.Contains("babylon") || nameLower.Contains("giàu nhất"))
-                    {
-                        price = 180000;
-                        displayImg = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
-                    }
-                    else if (nameLower.Contains("tâm lý") || nameLower.Contains("đám đông"))
-                    {
-                        price = 122341;
-                        displayImg = "https://pos.nvncdn.com/fd5775-40602/ps/20240115_0ajcFr7hKU.jpeg?v=1705298977";
-                    }
-                    else
-                    {
-                        displayImg = "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=500&q=80";
-                    }
-                }
+                        try { productName = p.GetType().GetProperty("ProductName")?.GetValue(p)?.ToString() ?? p.GetType().GetProperty("TenSanPham")?.GetValue(p)?.ToString() ?? "Sách bản quyền"; } catch { }
+                        try { productId = (p.GetType().GetProperty("ProductID")?.GetValue(p) ?? p.GetType().GetProperty("MaSanPham")?.GetValue(p))?.ToString(); } catch { }
 
-                <div class="col product-col">
-                    <div class="card product-card h-100">
-                        <!-- 🌟 BẤM VÀO HÌNH ẢNH ĐỂ XEM CHI TIẾT SẢN PHẨM -->
-                        <div class="product-img-wrapper">
-                            <a href="@Url.Action("Details", "Home", new { id = productId })">
-                                <img src="@displayImg" alt="@productName" />
-                            </a>
-                        </div>
-                        <div class="card-body d-flex flex-column">
-                            <!-- 🌟 BẤM VÀO TÊN SÁCH ĐỂ XEM CHI TIẾT SẢN PHẨM -->
-                            <h5 class="card-title fw-bold text-dark fs-6 text-truncate" title="@productName">
-                                <a href="@Url.Action("Details", "Home", new { id = productId })" class="text-dark text-decoration-none">
-                                    @productName
+                        string nameLower = productName.ToLower();
+                        if (nameLower.Contains("conan"))
+                        {
+                            price = 24200;
+                            displayImg = "https://cdn1.fahasa.com/media/catalog/product/t/h/tham-tu-lung-danh-conan_tap-23_-tb-2023.jpg";
+                        }
+                        else if (nameLower.Contains("babylon") || nameLower.Contains("giàu nhất"))
+                        {
+                            price = 180000;
+                            displayImg = "https://upload.wikimedia.org/wikipedia/vi/0/04/Ng%C6%B0%E1%BB%9Di_gi%C3%A0u_c%C3%B3_nh%E1%BA%A5t_th%C3%A0nh_Babylon.jpg";
+                        }
+                        else if (nameLower.Contains("tâm lý") || nameLower.Contains("đám đông"))
+                        {
+                            price = 122341;
+                            displayImg = "https://pos.nvncdn.com/fd5775-40602/ps/20240115_0ajcFr7hKU.jpeg?v=1705298977";
+                        }
+                        else
+                        {
+                            displayImg = "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=500&q=80";
+                        }
+                    }
+
+                    <div class="col product-col">
+                        <div class="card product-card h-100">
+                            <!-- 🌟 BẤM VÀO HÌNH ẢNH ĐỂ XEM CHI TIẾT SẢN PHẨM -->
+                            <div class="product-img-wrapper">
+                                <a href="@Url.Action("Details", "Home", new { id = productId })">
+                                    <img src="@displayImg" alt="@productName" />
                                 </a>
-                            </h5>
-                            <p class="card-text text-muted small flex-grow-1">Sách bản quyền chính hãng, chất lượng cao.</p>
-
-                            <div class="mb-3">
-                                <span class="price-tag">@price.ToString("N0") đ</span>
                             </div>
+                            <div class="card-body d-flex flex-column">
+                                <!-- 🌟 BẤM VÀO TÊN SÁCH ĐỂ XEM CHI TIẾT SẢN PHẨM -->
+                                <h5 class="card-title fw-bold text-dark fs-6 text-truncate" title="@productName">
+                                    <a href="@Url.Action("Details", "Home", new { id = productId })" class="text-dark text-decoration-none">
+                                        @productName
+                                    </a>
+                                </h5>
+                                <p class="card-text text-muted small flex-grow-1">Sách bản quyền chính hãng, chất lượng cao.</p>
 
-                            <!-- Nút Thêm giỏ hàng & Mua ngay -->
-                            <div class="d-grid gap-2">
-                                <a href="@Url.Action("AddToCart", "Cart", new { id = productId })" class="btn btn-outline-dark btn-sm fw-bold">
-                                    <i class="fas fa-cart-plus me-1"></i> Thêm giỏ hàng
-                                </a>
-                                <a href="@Url.Action("BuyNow", "Cart", new { id = productId })" class="btn btn-warning btn-sm fw-bold text-dark">
-                                    <i class="fas fa-bolt me-1"></i> Mua ngay
-                                </a>
+                                <div class="mb-3">
+                                    <span class="price-tag">@price.ToString("N0") đ</span>
+                                </div>
+
+                                <!-- Nút Thêm giỏ hàng & Mua ngay -->
+                                <div class="d-grid gap-2">
+                                    <a href="@Url.Action("AddToCart", "Cart", new { id = productId })" class="btn btn-outline-dark btn-sm fw-bold">
+                                        <i class="fas fa-cart-plus me-1"></i> Thêm giỏ hàng
+                                    </a>
+                                    <a href="@Url.Action("BuyNow", "Cart", new { id = productId })" class="btn btn-warning btn-sm fw-bold text-dark">
+                                        <i class="fas fa-bolt me-1"></i> Mua ngay
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <div class="text-muted fs-5"><i class="fas fa-search fa-2x mb-3 text-warning"></i><br>Không tìm thấy sản phẩm phù hợp với từ khóa của bạn.</div>
                 </div>
             }
         }
     </div>
 </div>
-fix dựa trên home index gốc của tôi full
